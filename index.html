@@ -351,7 +351,13 @@ function checkSenha(){
           <input type="date" id="diary-date-picker" style="margin-left:auto;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;font-family:var(--font);background:var(--bg);color:var(--text);cursor:pointer" onchange="switchDiaryDate(this.value)">
         </div>
         <textarea class="diary-area" id="diary-today" placeholder="Como foi o seu dia? Pode registrar qualquer data aqui."></textarea>
-        <div class="diary-footer"><span style="font-size:10px;color:var(--muted)" id="diary-saved-label"></span><button class="save-btn" onclick="saveDiary()">Salvar</button></div>
+        <div class="diary-footer">
+          <span style="font-size:10px;color:var(--muted)" id="diary-saved-label"></span>
+          <div style="display:flex;gap:6px">
+            <button class="save-btn" onclick="saveDiary()">Salvar</button>
+            <button class="save-btn" onclick="exportDiaryToHermes()" style="background:var(--blue)" title="Gera mensagem para o Hermes salvar no Drive">📁 Drive</button>
+          </div>
+        </div>
       </div>
       <div class="sec">Entradas anteriores</div>
       <div class="card"><div id="diary-past"></div></div>
@@ -388,8 +394,30 @@ function checkSenha(){
 
 <!-- LEITURA -->
 <div class="page" id="page-leitura">
-  <div class="header"><div><h1>Leitura</h1><p>Meta: 1 livro por mês · 12 min diários</p></div><span class="badge" id="books-badge">0 livros</span></div>
-  <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">📚</div><span class="card-name">Lendo agora</span><button class="save-btn" onclick="openModal('book')" style="margin-left:auto;font-size:10px;padding:4px 10px">+ Livro</button></div><div class="book-grid" id="books-grid"></div></div>
+  <div class="header"><div><h1>Leitura</h1><p>Meta: 1 livro por mês · 12 min diários</p></div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <span class="badge" id="books-badge">0 livros</span>
+      <button class="save-btn" onclick="openModal('book')" style="font-size:10px;padding:4px 10px">+ Livro</button>
+    </div>
+  </div>
+
+  <!-- LENDO -->
+  <div class="card" style="margin-bottom:10px">
+    <div class="card-header"><div class="card-icon" style="background:var(--green-light)">📖</div><span class="card-name">Lendo agora</span><span class="card-count" id="cnt-lendo"></span></div>
+    <div class="book-grid" id="books-lendo"></div>
+  </div>
+
+  <!-- QUERO LER -->
+  <div class="card" style="margin-bottom:10px">
+    <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">🔖</div><span class="card-name">Quero ler</span><span class="card-count" id="cnt-quero"></span></div>
+    <div class="book-grid" id="books-quero"></div>
+  </div>
+
+  <!-- CONCLUÍDOS -->
+  <div class="card">
+    <div class="card-header"><div class="card-icon" style="background:var(--amber-light)">✅</div><span class="card-name">Concluídos</span><span class="card-count" id="cnt-concluido"></span></div>
+    <div class="book-grid" id="books-concluido"></div>
+  </div>
 </div>
 
 <!-- ATIVIDADE -->
@@ -481,444 +509,12 @@ function checkSenha(){
 <script id="hermes-data-block" type="application/json">
 {
   "gtd": {
-    "updated": "16/06 16:00",
-    "tasks": [
-      {
-        "tarefa": "TAVI protocolo pós-procedimento",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Angioplastia complexa revisão",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Valvopatias diretriz 2025",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Inglês vocabulário médico",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Insuficiência cardíaca atualização",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Planejamento financeiro pessoal",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Viagem 2026 - Inglaterra-Londres - Família: definir passeios/roteiro",
-        "area": "Viagens",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Viagem 2026 - Inglaterra-Londres - Família: pesquisar/comprar passagens",
-        "area": "Viagens",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Viagem 2026 - Inglaterra-Londres - Família: reservar/verificar hotel",
-        "area": "Viagens",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Viagem 2026-08 - Recife - Trabalho: reservar/verificar hotel",
-        "area": "Viagens",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Viagem 2026 - Índia - Curso: definir passeios/roteiro",
-        "area": "Viagens",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Viagem 2026 - Índia - Curso: reservar/verificar hotel",
-        "area": "Viagens",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": "Hotel será providenciado pela empresa organizadora do curso"
-      },
-      {
-        "tarefa": "Reservar hotel da Índia",
-        "area": "Viagens",
-        "status": "⏳ Em espera",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Reunião segunda à noite — projetos de pesquisa",
-        "area": "Academia",
-        "status": "⏳ Em espera",
-        "prioridade": "🟡 Normal",
-        "aguardando": "Reunião segunda à noite"
-      },
-      {
-        "tarefa": "Retomar aeróbico 3x/semana",
-        "area": "Saúde",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Aulas presenciais diárias de inglês antes da Índia",
-        "area": "Saúde",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🔴 Urgente",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Marketing do consultório com IA",
-        "area": "Consultório",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Ajustar agentes do consultório Alfred e Laura — comunicação e arquivamento",
-        "area": "Consultório",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🔴 Urgente",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Preparar aula Congresso NNE",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Estudar mesas SBHCI",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Organizar TCCs",
-        "area": "Academia",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Realizar investimentos no interior",
-        "area": "Finanças",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Planejar investimentos",
-        "area": "Finanças",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Publicações via SBC",
-        "area": "Congresso",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Solicitar patrocínio Afya",
-        "area": "Congresso",
-        "status": "⏳ Em espera",
-        "prioridade": "🟡 Normal",
-        "aguardando": "Afya (patrocínio)"
-      },
-      {
-        "tarefa": "Solicitar reunião CREMERO + patrocínio",
-        "area": "Congresso",
-        "status": "⏳ Em espera",
-        "prioridade": "🟡 Normal",
-        "aguardando": "CREMERO (patrocínio)"
-      },
-      {
-        "tarefa": "Tabular dados do mestrado",
-        "area": "Mestrado",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Escrever artigo do mestrado",
-        "area": "Mestrado",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Preparar nova apresentação PIT",
-        "area": "Mestrado",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Coletar dados de Abril do mestrado",
-        "area": "Mestrado",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🔴 Urgente",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Pedir dispensa do TCLE do mestrado",
-        "area": "Mestrado",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🔴 Urgente",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Ver congressos para as ligas",
-        "area": "SOCERON",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Alinhar ligas acadêmicas",
-        "area": "SOCERON",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Divulgar corrida do coração + ação da copa para marketing",
-        "area": "SOCERON",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Organizar clube de revista da SOCERON por 6 meses",
-        "area": "SOCERON",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Pagar contas pendentes da SOCERON",
-        "area": "SOCERON",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🟡 Normal",
-        "aguardando": ""
-      },
-      {
-        "tarefa": "Formar comissão científica da SOCERON e verificar adimplência",
-        "area": "SOCERON",
-        "status": "⚡ Próxima ação",
-        "prioridade": "🔴 Urgente",
-        "aguardando": ""
-      }
-    ]
+    "updated": "Aguardando primeira atualização",
+    "tasks": []
   },
   "viagens": {
-    "updated": "16/06 16:00",
-    "items": [
-      {
-        "destino": "2026-08 - Recife - Trabalho",
-        "periodo": "2026-08-19 a 2026-08-22",
-        "motivo": "Trabalho",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Chegando"
-      },
-      {
-        "destino": "2027 - Europa - Família",
-        "periodo": "2027-01-30 a 2027-02-12",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Possíveis"
-      },
-      {
-        "destino": "2026-07 - São Paulo - SBHCI / SOLACI",
-        "periodo": "2026-07-29 a 2026-08-01",
-        "motivo": "Trabalho",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Chegando"
-      },
-      {
-        "destino": "2026-03 - São Paulo - Curso TAVI",
-        "periodo": "2026-03-01 a 2026-03-31",
-        "motivo": "Estudo",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2026-02 - Europa - Família",
-        "periodo": "2026-01-31 a 2026-02-15",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2025-11 - Maceió - Luiz e Larissa",
-        "periodo": "2025-11-01 a 2025-11-30",
-        "motivo": "Casal",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2025-09 - Rio de Janeiro - Família",
-        "periodo": "2025-09-11 a 2025-09-11",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2025-08 - Itália - Luiz e Larissa",
-        "periodo": "2025-08-11 a 2025-08-17",
-        "motivo": "Casal",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2025-06 - São Paulo - Curso",
-        "periodo": "2025-06-05 a 2025-06-06",
-        "motivo": "Estudo",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2025-02 - Orlando Disney - Família",
-        "periodo": "2025-02-28 a 2025-03-11",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2024-02 - São Paulo - Curso",
-        "periodo": "2024-02-27 a 2024-03-03",
-        "motivo": "Estudo",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2023 - Orlando - Família",
-        "periodo": "2023-01-01 a 2023-12-31",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2023 - Bariloche - Família",
-        "periodo": "2023-07-01 a 2023-07-31",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "2026 - Inglaterra-Londres - Família",
-        "periodo": "2026-09-05 a 2026-09-13",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Chegando"
-      },
-      {
-        "destino": "2026 - Índia - Curso",
-        "periodo": "2026-06-26 a 2026-06-27",
-        "motivo": "Estudo",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Chegando"
-      },
-      {
-        "destino": "Casamento Antonio",
-        "periodo": "2024-11-14 a 2024-11-17",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "Brasília Setembro",
-        "periodo": "2024-09-20 a 2024-09-22",
-        "motivo": "Casal",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "Praia SC - Casamento BIA e Victor",
-        "periodo": "2024-10-26 a 2024-11-02",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      },
-      {
-        "destino": "Niver do Dalton",
-        "periodo": "2024-10-02 a 2024-10-06",
-        "motivo": "Família",
-        "passagens": "",
-        "hotel": "",
-        "passeios": "",
-        "obs": "Passadas"
-      }
-    ]
+    "updated": "Aguardando primeira atualização",
+    "items": []
   }
 }
 </script>
@@ -956,9 +552,32 @@ function checkSenha(){
 
     window.fbSave = async function(state) {
       try {
-        await DOC_REF.set({ state, updated: new Date().toISOString() });
+        // Salva imagens separadamente para nao estourar o limite de 1MB
+        const parsed = JSON.parse(state);
+        const imgs = parsed.viz_images || [];
+        const stateWithoutImgs = {...parsed, viz_images: imgs.map((v,i) => v ? '__img_'+i : null)};
+        // Salva estado sem imagens
+        await DOC_REF.set({ state: JSON.stringify(stateWithoutImgs), updated: new Date().toISOString() });
+        // Salva cada imagem em documento separado
+        const imgRef = db.collection('dashboard').doc('luiz_imgs');
+        await imgRef.set({ imgs, updated: new Date().toISOString() });
         return true;
-      } catch(e) { console.error('Firebase save:', e); return false; }
+      } catch(e) {
+        console.error('Firebase save:', e);
+        // Fallback: salva tudo junto (pode falhar se muito grande)
+        try {
+          await DOC_REF.set({ state, updated: new Date().toISOString() });
+          return true;
+        } catch(e2) { return false; }
+      }
+    };
+
+    window.fbLoadImgs = async function() {
+      try {
+        const imgRef = db.collection('dashboard').doc('luiz_imgs');
+        const snap = await imgRef.get();
+        return snap.exists ? snap.data().imgs : null;
+      } catch(e) { return null; }
     };
 
     window.firebaseReady = true;
@@ -1332,8 +951,12 @@ async function syncFromFirebase() {
     const data = await window.fbLoad();
     if(data) {
       const remote = JSON.parse(data);
+      // Carrega imagens do documento separado se existir
+      if(window.fbLoadImgs){
+        try{const imgs=await window.fbLoadImgs();if(imgs)remote.viz_images=imgs;}catch(e){}
+      }
       STATE = remote;
-      localStorage.setItem('mm-luiz-2026', data);
+      localStorage.setItem('mm-luiz-2026', JSON.stringify(remote));
       setSyncStatus('ok', 'Firebase ✓');
       // Re-renderiza com dados do Firebase
       renderAfirmacoes();
@@ -1427,7 +1050,10 @@ function getDefaultState() {
       '2026-06-15':'Ontem o dia foi bem tranquilo… passei o dia com a família e tentando configurar o meu MM, porém pouco produzi… acabei tentando fazer muitas coisas ao mesmo tempo… no fim não conclui nada… hoje vou resolver uma por vez.',
       '2026-06-16':'Ontem fiz vários procedimentos… que conseguimos bons resultados… os pacientes evoluíram bem e conseguimos resolver boa parte das pendências… Hoje é o dia de resolver a parte do consultório e desenrolar a parte da SOCERON.',
     },
-    books: [{id:'b1',title:'Getting Things Done',author:'David Allen',pct:35},{id:'b2',title:'Miracle Morning',author:'Hal Elrod',pct:100}],
+    books: [
+      {id:'b1',title:'Getting Things Done',author:'David Allen',pct:35,status:'lendo'},
+      {id:'b2',title:'Miracle Morning',author:'Hal Elrod',pct:100,status:'concluido'},
+    ],
     af: {'2026-06-03':'musc','2026-06-04':'aerob','2026-06-05':'musc','2026-06-06':'musc','2026-06-07':'aerob','2026-06-09':'aerob','2026-06-10':'musc','2026-06-12':'musc','2026-06-13':'musc'},
     studies: [
       {id:'st1',title:'TAVI — protocolo pós-procedimento',area:'hemo',status:'doing'},
@@ -1465,7 +1091,31 @@ function renderViz(gridId){
   const grid=document.getElementById(gridId);if(!grid)return;
   grid.innerHTML=imgs.map((img,i)=>`<div class="viz-slot" onclick="triggerVizUpload(${i})">${img?`<img src="${img}"><div class="viz-label">${VIZ_LABELS[i]}</div><button class="viz-del" onclick="event.stopPropagation();delViz(${i})">✕</button>`:`<div class="viz-add"><span>📷</span><span>${VIZ_LABELS[i]}</span></div>`}</div>`).join('');
 }
-function triggerVizUpload(idx){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{if(!STATE.viz_images)STATE.viz_images=[null,null,null,null,null,null];STATE.viz_images[idx]=ev.target.result;scheduleSave();renderViz('viz-mm');renderViz('viz-diary');};r.readAsDataURL(f);};inp.click();}
+function triggerVizUpload(idx){
+  const inp=document.createElement('input');
+  inp.type='file';inp.accept='image/*';
+  inp.onchange=e=>{
+    const f=e.target.files[0];if(!f)return;
+    const img=new Image();
+    const url=URL.createObjectURL(f);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const canvas=document.createElement('canvas');
+      const MAX=600;
+      let w=img.width,h=img.height;
+      if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/jpeg',0.7);
+      if(!STATE.viz_images)STATE.viz_images=[null,null,null,null,null,null];
+      STATE.viz_images[idx]=compressed;
+      scheduleSave();
+      renderViz('viz-mm');renderViz('viz-diary');
+    };
+    img.src=url;
+  };
+  inp.click();
+}
 function delViz(idx){STATE.viz_images[idx]=null;scheduleSave();renderViz('viz-mm');renderViz('viz-diary');}
 
 // ===== MM =====
@@ -1595,8 +1245,32 @@ function toggleIdDay(key,ds,el){if(el.classList.contains('future'))return;if(!ST
 function updIdiomaStats(){['poli','duolingo','conversacao'].forEach(k=>{let t=0;for(let d=1;d<=CUR_DAY;d++){const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;t+=getIdioma(k,ds);}const el=document.getElementById('ist-'+k);if(el)el.textContent=t;});let dias=0;for(let d=1;d<=CUR_DAY;d++){const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(getIdioma('poli',ds)+getIdioma('duolingo',ds)+getIdioma('conversacao',ds)>0)dias++;}const el=document.getElementById('ist-total');if(el)el.textContent=dias;}
 
 // ===== LEITURA =====
-function initLeitura(){const books=STATE.books||[];document.getElementById('books-badge').textContent=books.length+' livros';document.getElementById('books-grid').innerHTML=books.map(b=>`<div class="book-card"><div class="book-title">${b.title}</div><div class="book-author">${b.author}</div><div style="display:flex;align-items:center;gap:8px;margin-top:6px"><input type="range" min="0" max="100" value="${b.pct}" style="flex:1;accent-color:var(--green)" oninput="updBook('${b.id}',this.value)"></div><div class="book-pct" id="bp-${b.id}">${b.pct}%</div><div class="book-progress"><div class="book-progress-fill" id="bpf-${b.id}" style="width:${b.pct}%"></div></div></div>`).join('');}
-function updBook(id,pct){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b)b.pct=parseInt(pct);document.getElementById('bp-'+id).textContent=pct+'%';document.getElementById('bpf-'+id).style.width=pct+'%';scheduleSave();}
+function initLeitura(){
+  const books=STATE.books||[];
+  document.getElementById('books-badge').textContent=books.length+' livros';
+  const CATS=[{st:'lendo',id:'books-lendo',cnt:'cnt-lendo',cor:'var(--green)',label:'Lendo'},
+              {st:'quero',id:'books-quero',cnt:'cnt-quero',cor:'var(--blue)',label:'Quero ler'},
+              {st:'concluido',id:'books-concluido',cnt:'cnt-concluido',cor:'var(--amber)',label:'Concluido'}];
+  CATS.forEach(({st,id,cnt,cor,label})=>{
+    const items=books.filter(b=>(b.status||'lendo')===st);
+    const cntEl=document.getElementById(cnt);if(cntEl)cntEl.textContent=items.length;
+    const grid=document.getElementById(id);if(!grid)return;
+    if(!items.length){grid.innerHTML='<div style="padding:10px 14px;font-size:11px;color:var(--muted)">Nenhum livro aqui ainda.</div>';return;}
+    grid.innerHTML=items.map(b=>`<div class="book-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div><div class="book-title">${b.title}</div><div class="book-author">${b.author}</div></div>
+        <button onclick="deleteBook('${b.id}')" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);padding:0;margin-top:2px">✕</button>
+      </div>
+      <div style="display:flex;gap:4px;margin:6px 0">
+        ${['lendo','quero','concluido'].map(s=>`<button onclick="setBookStatus('${b.id}','${s}')" style="font-size:9px;padding:2px 7px;border-radius:20px;border:1px solid;cursor:pointer;font-family:var(--font);${(b.status||'lendo')===s?'background:'+cor+';color:#fff;border-color:'+cor:'background:transparent;color:var(--muted);border-color:var(--border)'}">${s==='lendo'?'Lendo':s==='quero'?'Quero ler':'Concluido'}</button>`).join('')}
+      </div>
+      ${st!=='quero'?`<div style="display:flex;align-items:center;gap:8px;margin-top:4px"><input type="range" min="0" max="100" value="${b.pct||0}" style="flex:1;accent-color:${cor}" oninput="updBook('${b.id}',this.value)"></div><div class="book-pct" id="bp-${b.id}" style="color:${cor}">${b.pct||0}%</div><div class="book-progress"><div class="book-progress-fill" id="bpf-${b.id}" style="width:${b.pct||0}%;background:${cor}"></div></div>`:''}
+    </div>`).join('');
+  });
+}
+function setBookStatus(id,status){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b){b.status=status;scheduleSave();initLeitura();}}
+function deleteBook(id){if(!STATE.books)return;STATE.books=STATE.books.filter(x=>x.id!==id);scheduleSave();initLeitura();}
+function updBook(id,pct){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b)b.pct=parseInt(pct);const e1=document.getElementById('bp-'+id);const e2=document.getElementById('bpf-'+id);if(e1)e1.textContent=pct+'%';if(e2)e2.style.width=pct+'%';scheduleSave();}
 
 // ===== AF =====
 function initAF(){
@@ -1692,7 +1366,7 @@ function buildCharts(){
 // ===== MODAL =====
 let mType='';
 function openModal(type){mType=type;const body=document.getElementById('modal-body');if(type==='book'){document.getElementById('modal-title').textContent='Adicionar livro';body.innerHTML=`<input id="mi-title" placeholder="Título"><input id="mi-author" placeholder="Autor"><input id="mi-pct" type="number" min="0" max="100" value="0" placeholder="% lido">`;}else if(type==='study'){document.getElementById('modal-title').textContent='Novo tema de estudo';body.innerHTML=`<input id="mi-st" placeholder="Tema de estudo"><select id="mi-sa"><option value="hemo">🫀 Hemodinâmica</option><option value="cardio">❤️ Cardiologia</option><option value="ingles">🗣️ Inglês</option><option value="financas">💰 Finanças</option></select>`;}document.getElementById('modal-overlay').classList.add('open');}
-function saveModal(){if(mType==='book'){if(!STATE.books)STATE.books=[];STATE.books.push({id:'b'+Date.now(),title:document.getElementById('mi-title').value||'Sem título',author:document.getElementById('mi-author').value||'',pct:parseInt(document.getElementById('mi-pct').value)||0});scheduleSave();initLeitura();}else if(mType==='study'){if(!STATE.studies)STATE.studies=[];STATE.studies.push({id:'st'+Date.now(),title:document.getElementById('mi-st').value||'Sem título',area:document.getElementById('mi-sa').value,status:'todo'});scheduleSave();initEstudos();}document.getElementById('modal-overlay').classList.remove('open');}
+function saveModal(){if(mType==='book'){if(!STATE.books)STATE.books=[];const bst=document.getElementById('mi-bstatus');STATE.books.push({id:'b'+Date.now(),title:document.getElementById('mi-title').value||'Sem título',author:document.getElementById('mi-author').value||'',pct:parseInt(document.getElementById('mi-pct').value)||0,status:bst?bst.value:'lendo'});scheduleSave();initLeitura();}else if(mType==='study'){if(!STATE.studies)STATE.studies=[];STATE.studies.push({id:'st'+Date.now(),title:document.getElementById('mi-st').value||'Sem título',area:document.getElementById('mi-sa').value,status:'todo'});scheduleSave();initEstudos();}document.getElementById('modal-overlay').classList.remove('open');}
 
 // ===== INIT =====
 // ===== EXPORTAR EVOLUÇÃO =====
@@ -1726,6 +1400,33 @@ function exportEvolution(){
   a.download = `MilagreManha_Evolucao_${CUR_YEAR}.csv`;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function exportDiaryToHermes(){
+  const diary = STATE.diary || {};
+  const entries = Object.keys(diary).sort();
+  if(!entries.length){alert('Nenhuma entrada no diario ainda.');return;}
+  let texto = 'DIARIO MILAGRE DA MANHA 2026\n';
+  texto += '================================\n\n';
+  entries.forEach(ds=>{
+    const[y,m,d]=ds.split('-');
+    const meses=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+    texto += `=== ${parseInt(d)} de ${meses[parseInt(m)-1]} de ${y} ===\n`;
+    texto += diary[ds]+'\n\n';
+  });
+  // Copia para clipboard e mostra instrucao pro Hermes
+  navigator.clipboard.writeText(
+    `Hermes, salva este texto como arquivo "Diario_MM_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.txt" no Google Drive na pasta MilagreManha:\n\n${texto}`
+  ).then(()=>{
+    alert('Mensagem copiada! Cole no Telegram pro Hermes e ele salva no Drive.');
+  }).catch(()=>{
+    // Fallback: download direto
+    const blob=new Blob([texto],{type:'text/plain;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='Diario_MM_2026.txt';a.click();
+    URL.revokeObjectURL(url);
+  });
 }
 
 function init(){

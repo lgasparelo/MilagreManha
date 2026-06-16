@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Dr. Luiz 2026</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F7F6F3;--surface:#FFFFFF;--border:#E8E6E0;--text:#1A1917;--muted:#787672;
+  --green:#2D6A4F;--green-light:#E8F5EE;--green-mid:#52B788;
+  --amber:#B45309;--amber-light:#FEF3C7;
+  --red:#B91C1C;--red-light:#FEE2E2;
+  --blue:#1D4ED8;--blue-light:#EFF6FF;
+  --purple:#6D28D9;--purple-light:#EDE9FE;
+  --gray:#F1F0EC;--r:8px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
+.sync-bar{height:3px;background:var(--border);position:fixed;top:0;left:0;right:0;z-index:100}
+.sync-fill{height:100%;background:var(--green);width:0%;transition:width .3s}
+.sync-badge{position:fixed;top:6px;right:10px;z-index:101;font-size:10px;padding:2px 8px;border-radius:20px;background:var(--surface);border:1px solid var(--border);color:var(--muted);display:flex;align-items:center;gap:4px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--muted)}
+.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
+.sync-dot.ok{background:var(--green)}
+.sync-dot.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.nav{display:flex;background:var(--surface);border-bottom:1px solid var(--border);padding:0 12px;position:sticky;top:3px;z-index:10;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.nav-tab{padding:12px 12px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;flex-shrink:0}
+.nav-tab.active{color:var(--green);border-bottom-color:var(--green)}
+.nav-tab:hover:not(.active){color:var(--text)}
+.page{display:none;padding:14px;max-width:980px;margin:0 auto}
+.page.active{display:block}
+.header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.header h1{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.header p{font-size:11px;color:var(--muted);margin-top:2px}
+.badge{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;background:var(--green-light);color:var(--green);white-space:nowrap;flex-shrink:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:12px;overflow:hidden}
+.card-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.card-icon{width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.card-name{font-size:13px;font-weight:600;flex:1}
+.card-count{font-size:11px;color:var(--muted);background:var(--gray);padding:2px 7px;border-radius:20px}
+.sec{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:8px}
+.tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:20px}
+.tag-urgente{background:var(--red-light);color:var(--red)}
+.tag-hoje{background:var(--amber-light);color:var(--amber)}
+.tag-espera{background:var(--blue-light);color:var(--blue)}
+.tag-normal{background:var(--gray);color:var(--muted)}
+/* MM */
+.mm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px}
+.mm-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);padding:10px 8px;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.mm-item:hover{border-color:var(--green-mid);background:var(--green-light)}
+.mm-item.done{border-color:var(--green);background:var(--green-light)}
+.mm-emoji{font-size:18px;margin-bottom:3px}
+.mm-name{font-size:11px;font-weight:600}
+.mm-check{width:18px;height:18px;border:1.5px solid var(--border);border-radius:50%;margin:5px auto 0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;color:transparent}
+.mm-item.done .mm-check{background:var(--green);border-color:var(--green);color:#fff}
+.mm-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.mm-score{font-size:20px;font-weight:700;color:var(--green)}
+.mm-score span{font-size:11px;font-weight:400;color:var(--muted);margin-left:3px}
+/* AFIRMAÇÕES */
+.afirm-list{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
+.afirm-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--green-light);border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:14px;line-height:1.65;color:var(--text)}
+.afirm-item strong{color:var(--green);font-weight:700}
+.afirm-num{font-size:11px;font-weight:700;color:var(--green);min-width:18px;padding-top:2px;flex-shrink:0}
+/* VIZ */
+.viz-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px}
+.viz-slot{border:1.5px dashed var(--border);border-radius:var(--r);aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative;background:var(--bg)}
+.viz-slot:hover{border-color:var(--green)}
+.viz-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px}
+.viz-slot .viz-add{font-size:18px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.viz-slot .viz-add span{font-size:10px;color:var(--muted)}
+.viz-del{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.viz-slot:hover .viz-del{display:flex}
+.viz-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.45);color:#fff;font-size:10px;padding:3px 6px;text-align:center}
+/* DIÁRIO */
+.diary-layout{display:grid;grid-template-columns:1fr 320px;gap:12px;align-items:start}
+.diary-area{width:100%;min-height:140px;border:none;resize:vertical;font-family:var(--font);font-size:13px;color:var(--text);padding:12px 14px;background:transparent;line-height:1.7;outline:none}
+.diary-area::placeholder{color:var(--muted)}
+.diary-footer{padding:7px 14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.diary-entry{padding:10px 14px;border-top:1px solid var(--border)}
+.diary-entry-date{font-size:10px;color:var(--muted);margin-bottom:3px}
+.diary-entry-text{font-size:12px;line-height:1.7;white-space:pre-wrap}
+/* IDIOMAS */
+.idioma-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px}
+.idioma-card{border:1.5px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.idioma-card:hover{border-color:var(--blue);background:var(--blue-light)}
+.idioma-card.done{border-color:var(--blue);background:var(--blue-light)}
+.idioma-emoji{font-size:22px;margin-bottom:5px}
+.idioma-name{font-size:12px;font-weight:600}
+.idioma-desc{font-size:10px;color:var(--muted);margin-top:2px}
+.idioma-check{width:18px;height:18px;border:1.5px solid var(--border);border-radius:50%;margin:6px auto 0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;color:transparent}
+.idioma-card.done .idioma-check{background:var(--blue);border-color:var(--blue);color:#fff}
+/* TABELA */
+.habits-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.habits-table{width:100%;border-collapse:collapse;font-size:10px;min-width:500px}
+.habits-table th{padding:3px 2px;color:var(--muted);font-weight:500;text-align:center;min-width:19px}
+.habits-table th.hn{text-align:left;min-width:110px;font-size:11px}
+.habit-label{text-align:left;font-size:11px;color:var(--text);white-space:nowrap;padding:3px 6px 3px 0}
+.day-cell{width:19px;height:19px;border-radius:3px;cursor:pointer;border:1px solid var(--border);background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:9px;transition:all .1s;color:transparent}
+.day-cell:hover{border-color:var(--green-mid)}
+.day-cell.done{background:var(--green);border-color:var(--green);color:#fff}
+.day-cell.done-blue{background:var(--blue);border-color:var(--blue);color:#fff}
+.day-cell.today{border-color:var(--green);font-weight:700}
+.day-cell.future{opacity:.2;cursor:default;pointer-events:none}
+.habit-total{font-size:11px;font-weight:700;color:var(--green);padding-left:4px}
+.progress-bar{height:4px;background:var(--border);border-radius:3px;margin-top:8px;overflow:hidden}
+.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s}
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:12px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px;text-align:center}
+.stat-num{font-size:24px;font-weight:700;color:var(--green);line-height:1}
+.stat-label{font-size:10px;color:var(--muted);margin-top:2px}
+/* LEITURA */
+.book-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:12px 14px}
+.book-card{border:1px solid var(--border);border-radius:6px;padding:10px}
+.book-title{font-size:13px;font-weight:600;margin-bottom:1px}
+.book-author{font-size:11px;color:var(--muted);margin-bottom:7px}
+.book-pct{font-size:10px;color:var(--green);font-weight:600;margin-top:3px}
+.book-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px}
+.book-progress-fill{height:100%;background:var(--green);border-radius:2px}
+/* AF */
+.af-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:12px 14px}
+.af-day{text-align:center}
+.af-day-label{font-size:9px;color:var(--muted);margin-bottom:2px}
+.af-cell{width:100%;aspect-ratio:1;border-radius:5px;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s;background:var(--bg)}
+.af-cell:hover{border-color:var(--green-mid)}
+.af-cell.musc{background:#E8F5EE;border-color:var(--green)}
+.af-cell.aerob{background:#EFF6FF;border-color:var(--blue)}
+.af-cell.ambos{background:#FEF3C7;border-color:var(--amber)}
+.af-cell.future{opacity:.2;cursor:default;pointer-events:none}
+.af-legend{display:flex;gap:10px;padding:0 14px 10px;font-size:10px;color:var(--muted)}
+.af-legend span{display:flex;align-items:center;gap:3px}
+.af-dot{width:9px;height:9px;border-radius:2px}
+/* ESTUDOS */
+.board-wrap{display:grid;grid-template-columns:repeat(3,1fr)}
+.board-col{padding:10px}
+.board-col:not(:last-child){border-right:1px solid var(--border)}
+.board-col-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:7px;display:flex;align-items:center;gap:5px}
+.board-count{background:var(--gray);color:var(--muted);font-size:10px;padding:1px 5px;border-radius:10px}
+.study-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin-bottom:5px;cursor:pointer;transition:all .15s}
+.study-card:hover{border-color:var(--green-mid)}
+.study-card.sdone{opacity:.45}
+.study-card-title{font-size:11px;font-weight:500;margin-bottom:3px}
+.study-tag{font-size:9px;padding:1px 5px;border-radius:10px;display:inline-block}
+.st-cardio{background:#FEE2E2;color:var(--red)}
+.st-hemo{background:var(--purple-light);color:var(--purple)}
+.st-ingles{background:#EFF6FF;color:var(--blue)}
+.st-financas{background:var(--amber-light);color:var(--amber)}
+.add-btn{width:100%;border:1.5px dashed var(--border);border-radius:6px;padding:6px;cursor:pointer;font-size:11px;color:var(--muted);background:transparent;font-family:var(--font);transition:all .15s;text-align:center}
+.add-btn:hover{border-color:var(--green);color:var(--green)}
+/* GTD NOTION */
+.gtd-task{display:flex;align-items:flex-start;gap:8px;padding:7px 14px;border-bottom:1px solid var(--border);transition:background .15s}
+.gtd-task:last-child{border-bottom:none}
+.gtd-task:hover{background:var(--gray)}
+.gtd-task-text{font-size:12px;flex:1}
+.gtd-task-meta{font-size:10px;color:var(--muted);margin-top:2px}
+.gtd-task-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.notion-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--gray);color:var(--muted)}
+.notion-badge.urgente{background:var(--red-light);color:var(--red)}
+.notion-badge.normal{background:var(--amber-light);color:var(--amber)}
+.notion-badge.baixa{background:var(--green-light);color:var(--green)}
+.notion-badge.area{background:var(--blue-light);color:var(--blue)}
+.notion-badge.espera{background:var(--purple-light);color:var(--purple)}
+/* VIAGENS NOTION */
+.vrow{display:grid;grid-template-columns:90px 1fr auto;align-items:start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.vrow:last-child{border-bottom:none}
+.vdata{font-size:11px;color:var(--muted)}
+.vnome{font-weight:500;font-size:13px;margin-bottom:2px}
+.vsub{font-size:11px;color:var(--muted)}
+.vstatus{font-size:10px;padding:3px 8px;border-radius:20px;white-space:nowrap;margin-top:2px;display:inline-block}
+.vs-ok{background:var(--green-light);color:var(--green)}
+.vs-pend{background:var(--amber-light);color:var(--amber)}
+.vs-alert{background:var(--red-light);color:var(--red)}
+/* LOADING NOTION */
+.notion-loading{display:flex;align-items:center;gap:8px;padding:20px 14px;color:var(--muted);font-size:12px}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.notion-error{padding:14px;font-size:12px;color:var(--red);display:flex;align-items:center;gap:8px}
+.refresh-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;color:var(--muted);font-family:var(--font);margin-left:auto}
+.refresh-btn:hover{border-color:var(--green);color:var(--green)}
+/* PRIORITY */
+.priority-item{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border-radius:6px;background:var(--green-light);border-left:3px solid var(--green);margin-bottom:6px}
+.priority-num{font-size:10px;font-weight:700;color:var(--green);min-width:14px;padding-top:1px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+/* HEATMAP */
+.heatmap-wrap{padding:12px 14px;overflow-x:auto}
+.heatmap-months{display:flex;gap:4px}
+.heatmap-month{display:flex;flex-direction:column}
+.heatmap-month-label{font-size:10px;color:var(--muted);margin-bottom:4px;text-align:center}
+.heatmap-days{display:grid;grid-template-columns:repeat(5,1fr);gap:2px}
+.hmap-cell{width:11px;height:11px;border-radius:2px;background:var(--border)}
+.hmap-cell.l1{background:#C7E6D4}
+.hmap-cell.l2{background:#74C69D}
+.hmap-cell.l3{background:#40916C}
+.hmap-cell.l4{background:#1B4332}
+.hmap-legend{display:flex;align-items:center;gap:4px;margin-top:8px;font-size:10px;color:var(--muted)}
+.hmap-legend-cells{display:flex;gap:2px}
+.year-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px 14px}
+.year-stat{background:var(--gray);border-radius:var(--r);padding:12px;text-align:center}
+.year-stat-num{font-size:22px;font-weight:700;color:var(--green)}
+.year-stat-label{font-size:10px;color:var(--muted);margin-top:2px}
+.chart-wrap{padding:14px;position:relative;height:240px}
+/* NAVEGAÇÃO DE MESES */
+.month-nav{display:flex;align-items:center;gap:6px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.month-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;font-family:var(--font)}
+.month-btn:hover{border-color:var(--green);color:var(--green)}
+.month-btn.active{background:var(--green);border-color:var(--green);color:#fff}
+.month-btn.future{opacity:.35;cursor:default;pointer-events:none}
+/* VIAGENS STATIC */
+.viagem-row{display:grid;grid-template-columns:85px 1fr auto;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.viagem-row:last-child{border-bottom:none}
+.viagem-data{font-size:11px;color:var(--muted)}
+.viagem-nome{font-weight:500;font-size:12px}
+.viagem-sub{font-size:10px;color:var(--muted)}
+.v-ok{background:var(--green-light);color:var(--green);font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.v-pend{background:var(--amber-light);color:var(--amber);font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap}
+.v-alert{background:var(--red-light);color:var(--red);font-size:10px;padding:2px 7px;border-radius:20px;white-space:nowrap}
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);padding:18px;width:90%;max-width:380px;box-shadow:0 8px 32px rgba(0,0,0,.12)}
+.modal h3{font-size:14px;font-weight:600;margin-bottom:12px}
+.modal input,.modal select{width:100%;border:1px solid var(--border);border-radius:6px;padding:7px 10px;font-size:12px;font-family:var(--font);margin-bottom:8px;background:var(--bg);color:var(--text);outline:none}
+.modal input:focus,.modal select:focus{border-color:var(--green)}
+.modal-btns{display:flex;gap:8px;justify-content:flex-end}
+.btn{padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer;font-family:var(--font);border:none}
+.btn-primary{background:var(--green);color:#fff}
+.btn-secondary{background:var(--gray);color:var(--text)}
+.save-btn{background:var(--green);color:#fff;border:none;padding:5px 13px;border-radius:6px;font-size:11px;cursor:pointer;font-family:var(--font)}
+@media(max-width:640px){
+  .mm-grid{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .board-wrap{grid-template-columns:1fr}
+  .board-col:not(:last-child){border-right:none;border-bottom:1px solid var(--border)}
+  .book-grid{grid-template-columns:1fr}
+  .viz-grid{grid-template-columns:repeat(2,1fr)}
+  .diary-layout{grid-template-columns:1fr}
+  .year-grid{grid-template-columns:repeat(2,1fr)}
+  .vrow{grid-template-columns:70px 1fr}
+  .viagem-row{grid-template-columns:70px 1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="sync-bar"><div class="sync-fill" id="sync-fill"></div></div>
+<div class="sync-badge" id="sync-badge"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Carregando...</span></div>
+
+<div class="nav">
+  <div class="nav-tab active" onclick="showPage('mm',this)">🌅 MM</div>
+  <div class="nav-tab" onclick="showPage('diario',this)">✍️ Diário</div>
+  <div class="nav-tab" onclick="showPage('idiomas',this)">🗣️ Idiomas</div>
+  <div class="nav-tab" onclick="showPage('leitura',this)">📖 Leitura</div>
+  <div class="nav-tab" onclick="showPage('af',this)">💪 Atividade</div>
+  <div class="nav-tab" onclick="showPage('estudos',this)">🧠 Estudos</div>
+  <div class="nav-tab" onclick="showPage('gtd',this)">✅ GTD</div>
+  <div class="nav-tab" onclick="showPage('viagens',this)">✈️ Viagens</div>
+  <div class="nav-tab" onclick="showPage('evolucao',this)">📊 Evolução</div>
+</div>
+
+<!-- MM -->
+<div class="page active" id="page-mm">
+  <div class="header"><div><h1>Milagre da Manhã</h1><p id="mm-date"></p></div><span class="badge" id="mm-badge">0/6</span></div>
+  <div class="mm-score-row"><span class="sec" style="margin-bottom:0">SAVERS — hoje</span><div class="mm-score" id="mm-score">0<span>/6</span></div></div>
+  <div class="mm-grid">
+    <div class="mm-item" data-saver="silencio" onclick="toggleSaver(this)"><div class="mm-emoji">🧘</div><div class="mm-name">Silêncio</div><div class="mm-check">✓</div></div>
+    <div class="mm-item" data-saver="afirmacao" onclick="toggleSaver(this)"><div class="mm-emoji">💬</div><div class="mm-name">Afirmação</div><div class="mm-check">✓</div></div>
+    <div class="mm-item" data-saver="visualizacao" onclick="toggleSaver(this)"><div class="mm-emoji">🎯</div><div class="mm-name">Visualização</div><div class="mm-check">✓</div></div>
+    <div class="mm-item" data-saver="exercicio" onclick="toggleSaver(this)"><div class="mm-emoji">💪</div><div class="mm-name">Exercício</div><div class="mm-check">✓</div></div>
+    <div class="mm-item" data-saver="leitura" onclick="toggleSaver(this)"><div class="mm-emoji">📖</div><div class="mm-name">Leitura</div><div class="mm-check">✓</div></div>
+    <div class="mm-item" data-saver="escrita" onclick="toggleSaver(this)"><div class="mm-emoji">✍️</div><div class="mm-name">Escrita</div><div class="mm-check">✓</div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">💬</div><span class="card-name">Afirmações 2026</span></div><div class="afirm-list" id="afirm-mm"></div></div>
+  <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🎯</div><span class="card-name">Visualizações</span><span style="font-size:10px;color:var(--muted);margin-left:auto">Clique para adicionar</span></div><div class="viz-grid" id="viz-mm"></div></div>
+  <div class="stats-grid" style="margin-top:12px">
+    <div class="stat-card"><div class="stat-num" id="st-silencio">-</div><div class="stat-label">🧘 Silêncio</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-afirmacao">-</div><div class="stat-label">💬 Afirmação</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-exercicio">-</div><div class="stat-label">💪 Exercício</div></div>
+    <div class="stat-card"><div class="stat-num" id="st-leitura">-</div><div class="stat-label">📖 Leitura</div></div>
+  </div>
+  <!-- NAVEGAÇÃO DE MESES -->
+  <div class="month-nav" id="month-nav"></div>
+
+  <div class="card"><div class="card-header"><span class="card-name" id="table-month-label">Controle mensal</span><span class="card-count" id="month-pct"></span></div>
+    <div style="padding:10px 14px"><div class="habits-wrap"><table class="habits-table"><thead id="h-head"></thead><tbody id="h-body"></tbody></table></div>
+    <div class="progress-bar"><div class="progress-fill" id="month-bar" style="width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:right" id="month-label"></div></div>
+  </div>
+</div>
+
+<!-- DIÁRIO -->
+<div class="page" id="page-diario">
+  <div class="header"><div><h1>Diário Reflexivo</h1><p id="diary-date"></p></div></div>
+  <div class="diary-layout">
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--amber-light)">✍️</div>
+          <span class="card-name" id="diary-entry-title">Entrada de hoje</span>
+          <input type="date" id="diary-date-picker" style="margin-left:auto;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11px;font-family:var(--font);background:var(--bg);color:var(--text);cursor:pointer" onchange="switchDiaryDate(this.value)">
+        </div>
+        <textarea class="diary-area" id="diary-today" placeholder="Como foi o seu dia? Pode registrar qualquer data aqui."></textarea>
+        <div class="diary-footer"><span style="font-size:10px;color:var(--muted)" id="diary-saved-label"></span><button class="save-btn" onclick="saveDiary()">Salvar</button></div>
+      </div>
+      <div class="sec">Entradas anteriores</div>
+      <div class="card"><div id="diary-past"></div></div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:10px"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">💬</div><span class="card-name">Afirmações 2026</span></div><div class="afirm-list" id="afirm-diary"></div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🎯</div><span class="card-name">Visualizações</span></div><div class="viz-grid" id="viz-diary" style="grid-template-columns:repeat(2,1fr)"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- IDIOMAS -->
+<div class="page" id="page-idiomas">
+  <div class="header"><div><h1>Idiomas</h1><p>Meta: inglês fluente · 10 min diários</p></div><span class="badge" id="idioma-badge">0/3</span></div>
+  <div class="mm-score-row" style="padding:0 0 8px"><span class="sec" style="margin-bottom:0">Hoje</span><div class="mm-score" id="idioma-score" style="color:var(--blue)">0<span>/3</span></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><div class="card-icon" style="background:var(--blue-light)">🗣️</div><span class="card-name">Prática de hoje</span></div>
+    <div class="idioma-grid">
+      <div class="idioma-card" data-idioma="poli" onclick="toggleIdioma(this)"><div class="idioma-emoji">👩‍🏫</div><div class="idioma-name">Teacher Poli</div><div class="idioma-desc">10 min diários</div><div class="idioma-check">✓</div></div>
+      <div class="idioma-card" data-idioma="duolingo" onclick="toggleIdioma(this)"><div class="idioma-emoji">🦉</div><div class="idioma-name">Duolingo</div><div class="idioma-desc">Prática diária</div><div class="idioma-check">✓</div></div>
+      <div class="idioma-card" data-idioma="conversacao" onclick="toggleIdioma(this)"><div class="idioma-emoji">🎙️</div><div class="idioma-name">Conversação</div><div class="idioma-desc">Aula particular</div><div class="idioma-check">✓</div></div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="ist-poli" style="color:var(--blue)">-</div><div class="stat-label">👩‍🏫 Teacher Poli</div></div>
+    <div class="stat-card"><div class="stat-num" id="ist-duolingo" style="color:var(--blue)">-</div><div class="stat-label">🦉 Duolingo</div></div>
+    <div class="stat-card"><div class="stat-num" id="ist-conversacao" style="color:var(--blue)">-</div><div class="stat-label">🎙️ Conversação</div></div>
+    <div class="stat-card"><div class="stat-num" id="ist-total" style="color:var(--blue)">-</div><div class="stat-label">📅 Dias ativos</div></div>
+  </div>
+  <div class="card"><div class="card-header"><span class="card-name">Controle mensal</span></div>
+    <div style="padding:10px 14px"><div class="habits-wrap"><table class="habits-table"><thead id="id-head"></thead><tbody id="id-body"></tbody></table></div>
+    <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" id="id-bar" style="background:var(--blue);width:0%"></div></div></div>
+  </div>
+</div>
+
+<!-- LEITURA -->
+<div class="page" id="page-leitura">
+  <div class="header"><div><h1>Leitura</h1><p>Meta: 1 livro por mês · 12 min diários</p></div><span class="badge" id="books-badge">0 livros</span></div>
+  <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">📚</div><span class="card-name">Lendo agora</span><button class="save-btn" onclick="openModal('book')" style="margin-left:auto;font-size:10px;padding:4px 10px">+ Livro</button></div><div class="book-grid" id="books-grid"></div></div>
+</div>
+
+<!-- ATIVIDADE -->
+<div class="page" id="page-af">
+  <div class="header"><div><h1>Atividade Física</h1><p>Meta: musculação 3x + aeróbico 3x / semana</p></div><span class="badge" id="af-badge"></span></div>
+  <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">💪</div><span class="card-name" id="af-month-title">Mês atual</span><span style="font-size:10px;color:var(--muted);margin-left:auto">toque: musc → aeróbico → ambos</span></div>
+    <div class="af-grid" id="af-grid"></div>
+    <div class="af-legend"><span><div class="af-dot" style="background:#E8F5EE;border:1px solid var(--green)"></div>Musculação</span><span><div class="af-dot" style="background:#EFF6FF;border:1px solid var(--blue)"></div>Aeróbico</span><span><div class="af-dot" style="background:#FEF3C7;border:1px solid var(--amber)"></div>Ambos</span></div>
+    <div style="padding:0 14px 12px"><div class="progress-bar"><div class="progress-fill" id="af-bar" style="width:0%"></div></div><div style="font-size:10px;color:var(--muted);margin-top:4px" id="af-label"></div></div>
+  </div>
+</div>
+
+<!-- ESTUDOS -->
+<div class="page" id="page-estudos">
+  <div class="header"><div><h1>Board de Estudos</h1><p>Meta: 60 min · 5x/semana</p></div><button class="save-btn" onclick="openModal('study')">+ Tema</button></div>
+  <div class="card"><div class="board-wrap">
+    <div class="board-col"><div class="board-col-title">📥 A estudar <span class="board-count" id="sc-todo"></span></div><div id="study-todo"></div><button class="add-btn" onclick="openModal('study')">+ Adicionar</button></div>
+    <div class="board-col"><div class="board-col-title">📖 Estudando <span class="board-count" id="sc-doing"></span></div><div id="study-doing"></div></div>
+    <div class="board-col"><div class="board-col-title">✅ Concluído <span class="board-count" id="sc-done"></span></div><div id="study-done"></div></div>
+  </div></div>
+</div>
+
+<!-- GTD — DADOS INJETADOS PELO HERMES -->
+<div class="page" id="page-gtd">
+  <div class="header">
+    <div><h1>GTD — Pendências</h1><p id="gtd-last-sync">Atualizado pelo Hermes</p></div>
+    <span class="badge" id="gtd-badge">-</span>
+  </div>
+  <div class="card" style="margin-bottom:10px"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">🎯</div><span class="card-name">Prioridades do momento</span></div>
+    <div style="padding:10px 12px">
+      <div class="priority-item"><span class="priority-num">1</span><span style="font-size:12px">Inglês fluente — aulas diárias antes da Índia</span></div>
+      <div class="priority-item"><span class="priority-num">2</span><span style="font-size:12px">Ajustar Alfred e Laura — comunicação e arquivamento</span></div>
+      <div class="priority-item"><span class="priority-num">3</span><span style="font-size:12px">Retomar aeróbico 3x/semana</span></div>
+    </div>
+  </div>
+  <div id="gtd-content">
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-header"><div class="card-icon" style="background:var(--red-light)">🔴</div><span class="card-name">Urgentes</span><span class="card-count" id="cnt-urgente"></span></div>
+      <div id="gtd-urgente"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">Aguardando atualização do Hermes às 4h...</div></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">🏛️</div><span class="card-name">SOCERON</span><span class="card-count" id="cnt-soceron"></span></div><div id="gtd-soceron"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">—</div></div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🎓</div><span class="card-name">Mestrado</span><span class="card-count" id="cnt-mestrado"></span></div><div id="gtd-mestrado"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">—</div></div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--amber-light)">🎤</div><span class="card-name">Congresso</span><span class="card-count" id="cnt-congresso"></span></div><div id="gtd-congresso"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">—</div></div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--blue-light)">✈️</div><span class="card-name">Viagens</span><span class="card-count" id="cnt-viagens-gtd"></span></div><div id="gtd-viagens"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">—</div></div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--red-light)">💰</div><span class="card-name">Finanças</span><span class="card-count" id="cnt-financas"></span></div><div id="gtd-financas"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">—</div></div></div>
+      <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--gray)">📚</div><span class="card-name">Academia</span><span class="card-count" id="cnt-academia"></span></div><div id="gtd-academia"><div style="padding:10px 14px;font-size:11px;color:var(--muted)">—</div></div></div>
+    </div>
+    <div class="card" style="border-left:3px solid var(--purple)">
+      <div class="card-header"><div class="card-icon" style="background:var(--purple-light)">⏳</div><span class="card-name">Em espera</span><span class="card-count" id="cnt-espera"></span></div>
+      <div style="padding:6px 14px" id="gtd-espera"><div style="padding:10px 0;font-size:11px;color:var(--muted)">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- VIAGENS — DADOS INJETADOS PELO HERMES/ATLAS -->
+<div class="page" id="page-viagens">
+  <div class="header">
+    <div><h1>Viagens 2026</h1><p id="viagens-last-sync">Atualizado pelo Hermes</p></div>
+    <span class="badge" id="viagens-badge">-</span>
+  </div>
+  <div class="card" id="viagens-card">
+    <div style="padding:14px;font-size:12px;color:var(--muted);text-align:center">Aguardando atualização do Hermes às 4h...</div>
+  </div>
+</div>
+
+<!-- EVOLUÇÃO -->
+<div class="page" id="page-evolucao">
+  <div class="header"><div><h1>Evolução 2026</h1></div>
+    <button class="save-btn" onclick="exportEvolution()" style="font-size:11px">📥 Exportar CSV</button>
+  </div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Heatmap — consistência anual</span></div>
+    <div class="heatmap-wrap"><div class="heatmap-months" id="heatmap"></div>
+    <div class="hmap-legend"><span>Menos</span><div class="hmap-legend-cells"><div class="hmap-cell"></div><div class="hmap-cell l1"></div><div class="hmap-cell l2"></div><div class="hmap-cell l3"></div><div class="hmap-cell l4"></div></div><span>Mais</span></div></div>
+  </div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Totais anuais</span></div><div class="year-grid" id="year-grid"></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">SAVERS mensais</span></div><div class="chart-wrap"><canvas id="chart-savers"></canvas></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Exercício físico</span></div><div class="chart-wrap"><canvas id="chart-exercicio"></canvas></div></div>
+  <div class="card"><div class="card-header"><span class="card-name">Estudos + Idiomas</span></div><div class="chart-wrap"><canvas id="chart-estudos"></canvas></div></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)this.classList.remove('open')">
+
+<!-- ============================================================
+     BLOCO DE DADOS — EDITADO PELO HERMES TODO DIA ÀS 4H
+     NÃO REMOVA OS COMENTÁRIOS DE MARCAÇÃO
+     ============================================================ -->
+<script id="hermes-data-block" type="application/json">
+{
+  "gtd": {
+    "updated": "Aguardando primeira atualização",
+    "tasks": []
+  },
+  "viagens": {
+    "updated": "Aguardando primeira atualização",
+    "items": []
+  }
+}
+</script>
+  <div class="modal"><h3 id="modal-title"></h3><div id="modal-body"></div>
+    <div class="modal-btns"><button class="btn btn-secondary" onclick="document.getElementById('modal-overlay').classList.remove('open')">Cancelar</button><button class="btn btn-primary" onclick="saveModal()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- Firebase SDK via CDN compat (não-module, funciona com script normal) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+// ===== FIREBASE INIT =====
+(function(){
+  const firebaseConfig = {
+    apiKey: "AIzaSyDRUUcAQSn_QRIHfjblEuQhheFnWfxqaMU",
+    authDomain: "milagremanha-1f181.firebaseapp.com",
+    projectId: "milagremanha-1f181",
+    storageBucket: "milagremanha-1f181.firebasestorage.app",
+    messagingSenderId: "538967779802",
+    appId: "1:538967779802:web:6d5ed4ebb6eb004cd378e3"
+  };
+  try {
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const DOC_REF = db.collection('dashboard').doc('luiz');
+
+    window.fbLoad = async function() {
+      try {
+        const snap = await DOC_REF.get();
+        return snap.exists ? snap.data().state : null;
+      } catch(e) { console.error('Firebase load:', e); return null; }
+    };
+
+    window.fbSave = async function(state) {
+      try {
+        await DOC_REF.set({ state, updated: new Date().toISOString() });
+        return true;
+      } catch(e) { console.error('Firebase save:', e); return false; }
+    };
+
+    window.firebaseReady = true;
+    console.log('Firebase OK');
+  } catch(e) {
+    console.error('Firebase init error:', e);
+    window.firebaseReady = false;
+  }
+})();
+</script>
+
+<script>
+// ===== DATE — declarado primeiro pois tudo depende disso =====
+const NOW = new Date();
+const TODAY = NOW.toISOString().slice(0,10);
+const CUR_YEAR = NOW.getFullYear();
+const CUR_MONTH = NOW.getMonth();
+const CUR_DAY = NOW.getDate();
+const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const MONTH_SHORT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const DAYS_IN_MONTH = new Date(CUR_YEAR, CUR_MONTH+1, 0).getDate();
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+
+// ===== NAVEGAÇÃO DE MESES =====
+let VIEW_YEAR = CUR_YEAR;
+let VIEW_MONTH = CUR_MONTH;
+
+// Dados históricos completos por dia (Jan-Mai)
+const HIST_DAYS = {
+  // Jan 2026
+  '2026-01-01':{afirmacao:1,visualizacao:1,exercicio:0,leitura:0,escrita:0,idiomas:0},
+  '2026-01-02':{silencio:1,afirmacao:1,visualizacao:1,escrita:0,leitura:1,idiomas:1,exercicio:1},
+  '2026-01-03':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-01-04':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,idiomas:1},
+  '2026-01-05':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,idiomas:1,exercicio:1},
+  '2026-01-06':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,idiomas:1},
+  '2026-01-07':{silencio:1,exercicio:1,idiomas:1},
+  '2026-01-08':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:0,idiomas:1},
+  '2026-01-09':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,idiomas:1,exercicio:1},
+  '2026-01-10':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-01-11':{afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:0,exercicio:0},
+  '2026-01-12':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-01-20':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,idiomas:1,exercicio:1},
+  '2026-01-21':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,idiomas:1,exercicio:1},
+  '2026-01-22':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-01-23':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-01-25':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-01-26':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-01-28':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:0},
+  '2026-01-31':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,exercicio:0},
+  // Fev 2026 (mês de luto — bem poucos hábitos)
+  '2026-02-01':{silencio:1,afirmacao:1,visualizacao:1,escrita:1},
+  '2026-02-23':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:1,hemodinamica:1},
+  '2026-02-24':{silencio:1,afirmacao:1,visualizacao:1,escrita:1},
+  // Mar 2026
+  '2026-03-01':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-03-02':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:1,cardiologia:1},
+  '2026-03-03':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,hemodinamica:1,cardiologia:1,exercicio:1},
+  '2026-03-04':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1,cardiologia:1},
+  '2026-03-05':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:1},
+  '2026-03-06':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-07':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:0},
+  '2026-03-08':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-09':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-10':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-03-11':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-12':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-03-13':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-14':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-15':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-16':{silencio:0,afirmacao:0,leitura:1},
+  '2026-03-17':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,hemodinamica:1,cardiologia:1,exercicio:1},
+  '2026-03-18':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,hemodinamica:1,cardiologia:1,exercicio:0},
+  '2026-03-24':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,hemodinamica:1,cardiologia:1,exercicio:1},
+  '2026-03-25':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-03-27':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-28':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-29':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-30':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-03-31':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  // Abr 2026
+  '2026-04-01':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-04-02':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,cardiologia:1},
+  '2026-04-03':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,hemodinamica:1,cardiologia:1,exercicio:1},
+  '2026-04-04':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,exercicio:1},
+  '2026-04-05':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-04-06':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1},
+  '2026-04-07':{silencio:1,afirmacao:1,visualizacao:1,escrita:1},
+  '2026-04-11':{silencio:1,afirmacao:1,visualizacao:1,escrita:1},
+  '2026-04-14':{afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:0},
+  '2026-04-15':{leitura:1,idiomas:1},
+  '2026-04-16':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:0},
+  '2026-04-17':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-04-22':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-04-23':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-04-24':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,hemodinamica:1,exercicio:1},
+  '2026-04-25':{silencio:0,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:0,exercicio:1},
+  '2026-04-26':{exercicio:1},
+  '2026-04-27':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-04-28':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-04-30':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:0,cardiologia:1,exercicio:0},
+  // Mai 2026
+  '2026-05-02':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-05-04':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,financas:1,exercicio:1},
+  '2026-05-05':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1,cardiologia:1},
+  '2026-05-06':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-05-07':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,exercicio:1},
+  '2026-05-08':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1},
+  '2026-05-09':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:0,exercicio:0},
+  '2026-05-10':{exercicio:1,idiomas:1},
+  '2026-05-11':{silencio:1},
+  '2026-05-12':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-05-13':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-05-14':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0,cardiologia:1},
+  '2026-05-15':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0,cardiologia:1},
+  '2026-05-16':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-05-17':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-05-18':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-05-19':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:1},
+  '2026-05-20':{leitura:1},
+  '2026-05-21':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,exercicio:0},
+  '2026-05-24':{idiomas:1,exercicio:1},
+  '2026-05-25':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,cardiologia:1},
+  '2026-05-26':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:0,exercicio:1},
+  '2026-05-27':{idiomas:1,exercicio:1},
+  '2026-05-28':{leitura:1,idiomas:1,exercicio:1},
+  '2026-05-29':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,hemodinamica:1,cardiologia:1,exercicio:1},
+  '2026-05-30':{silencio:0,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:1,cardiologia:1,exercicio:1},
+  '2026-05-31':{silencio:1,afirmacao:1,visualizacao:1,escrita:1,leitura:1,idiomas:0,cardiologia:1,exercicio:0,hemodinamica:1},
+};
+
+function getHabitForDate(key, ds) {
+  // Prioridade: dados do usuário no STATE
+  if(STATE.habits && STATE.habits[ds] && STATE.habits[ds][key] !== undefined) {
+    return STATE.habits[ds][key] ? 1 : 0;
+  }
+  // Fallback: dados históricos
+  if(HIST_DAYS[ds] && HIST_DAYS[ds][key] !== undefined) return HIST_DAYS[ds][key];
+  return 0;
+}
+
+function buildMonthNav() {
+  const nav = document.getElementById('month-nav');
+  if(!nav) return;
+  const mShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  nav.innerHTML = mShort.map((m, i) => {
+    const isFuture = i > CUR_MONTH;
+    const isActive = (i === VIEW_MONTH);
+    return `<button class="month-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setViewMonth(${i})">${m}</button>`;
+  }).join('');
+}
+
+function setViewMonth(m) {
+  VIEW_MONTH = m;
+  buildMonthNav();
+  buildTableForMonth(VIEW_YEAR, VIEW_MONTH);
+  updStatsForMonth(VIEW_YEAR, VIEW_MONTH);
+}
+
+function buildTableForMonth(year, month) {
+  const days = daysInMonth(year, month);
+  const isCurrentMonth = (year === CUR_YEAR && month === CUR_MONTH);
+  const maxDay = isCurrentMonth ? CUR_DAY : days;
+
+  document.getElementById('table-month-label').textContent = `Controle — ${MONTH_NAMES[month]} ${year}`;
+
+  let head = `<tr><th class="hn">Hábito</th>`;
+  for(let d=1; d<=days; d++) {
+    const isT = (isCurrentMonth && d === CUR_DAY);
+    head += `<th style="${isT?'color:var(--green);font-weight:700':''}">${d}</th>`;
+  }
+  head += '<th>T</th></tr>';
+  document.getElementById('h-head').innerHTML = head;
+
+  let body = ''; let gT=0, gP=0;
+  SAVERS_DEF.forEach(({key, label}) => {
+    body += `<tr><td class="habit-label">${label}</td>`;
+    let tot = 0;
+    for(let d=1; d<=days; d++) {
+      const fut = isCurrentMonth && d > CUR_DAY;
+      const isT = isCurrentMonth && d === CUR_DAY;
+      const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const done = fut ? 0 : getHabitForDate(key, ds);
+      if(done && !fut) tot++;
+      const cls = fut ? 'future' : (done ? 'done' : '') + (isT ? ' today' : '');
+      const onclick = isCurrentMonth ? `onclick="toggleDay('${key}','${ds}',this)"` : `onclick="toggleHistDay('${key}','${ds}',this)"`;
+      body += `<td><div class="day-cell ${cls}" ${onclick}>✓</div></td>`;
+    }
+    gT += tot; gP += maxDay;
+    body += `<td class="habit-total">${tot}</td></tr>`;
+  });
+  document.getElementById('h-body').innerHTML = body;
+  const pct = gP > 0 ? Math.round(gT/gP*100) : 0;
+  document.getElementById('month-bar').style.width = pct+'%';
+  document.getElementById('month-label').textContent = `${gT} de ${gP} possíveis (${pct}%)`;
+  document.getElementById('month-pct').textContent = pct+'%';
+}
+
+function toggleHistDay(key, ds, el) {
+  // Permite editar meses históricos também
+  if(!STATE.habits) STATE.habits = {};
+  if(!STATE.habits[ds]) STATE.habits[ds] = {};
+  const cur = getHabitForDate(key, ds);
+  if(cur) delete STATE.habits[ds][key]; else STATE.habits[ds][key] = 1;
+  el.classList.toggle('done', !cur);
+  buildTableForMonth(VIEW_YEAR, VIEW_MONTH);
+  scheduleSave();
+}
+
+function updStatsForMonth(year, month) {
+  ['silencio','afirmacao','exercicio','leitura'].forEach(k => {
+    const days = daysInMonth(year, month);
+    const isCurrentMonth = (year === CUR_YEAR && month === CUR_MONTH);
+    const maxDay = isCurrentMonth ? CUR_DAY : days;
+    let t = 0;
+    for(let d=1; d<=maxDay; d++) {
+      const ds = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      t += getHabitForDate(k, ds);
+    }
+    const el = document.getElementById('st-'+k); if(el) el.textContent = t;
+  });
+}
+function loadHermesData() {
+  try {
+    const block = document.getElementById('hermes-data-block');
+    if(!block) return;
+    let raw = block.textContent || block.innerHTML;
+    raw = raw.trim();
+    if(!raw) return;
+    const data = JSON.parse(raw);
+
+    // GTD
+    if(data.gtd) {
+      const tasks = data.gtd.tasks || [];
+      const updated = data.gtd.updated || '';
+      document.getElementById('gtd-last-sync').textContent = updated ? `Atualizado: ${updated}` : 'Aguardando Hermes';
+      document.getElementById('gtd-badge').textContent = tasks.length ? `${tasks.length} pendências` : '-';
+      if(tasks.length) renderGTDFromData(tasks);
+    }
+
+    // Viagens
+    if(data.viagens) {
+      const items = data.viagens.items || [];
+      const updated = data.viagens.updated || '';
+      document.getElementById('viagens-last-sync').textContent = updated ? `Atualizado: ${updated}` : 'Aguardando Hermes';
+      document.getElementById('viagens-badge').textContent = items.length ? `${items.length} viagens` : '-';
+      if(items.length) renderViagensFromData(items);
+    }
+  } catch(e) {
+    console.log('Dados do Hermes ainda não disponíveis:', e.message);
+  }
+}
+
+function renderGTDFromData(tasks) {
+  const areaMap = {
+    'SOCERON':'soceron','Mestrado':'mestrado','Congresso':'congresso','Congresso Novembro':'congresso',
+    'Viagens':'viagens','Finanças':'financas','Academia':'academia',
+    'Consultório':'academia','Família':'academia','Saúde':'academia'
+  };
+  const urgentes = [];
+  const espera = [];
+  const byArea = {soceron:[],mestrado:[],congresso:[],viagens:[],financas:[],academia:[]};
+
+  tasks.forEach(t => {
+    const st = (t.status||'').toLowerCase();
+    const pr = (t.prioridade||'').toLowerCase();
+    if(st.includes('espera')) { espera.push(t); return; }
+    if(pr.includes('urgente')) urgentes.push(t);
+    const aKey = areaMap[t.area] || 'academia';
+    if(byArea[aKey]) byArea[aKey].push(t);
+  });
+
+  function mkRow(t) {
+    const pr = (t.prioridade||'').toLowerCase();
+    const prCls = pr.includes('urgente')?'urgente':pr.includes('normal')?'normal':'baixa';
+    const prClean = (t.prioridade||'').replace(/[🔴🟡🟢]\s*/,'');
+    return `<div class="gtd-task">
+      <div style="flex:1">
+        <div class="gtd-task-text">${t.tarefa||'?'}</div>
+        <div class="gtd-task-tags">
+          ${t.area?`<span class="notion-badge area">${t.area}</span>`:''}
+          ${prClean?`<span class="notion-badge ${prCls}">${prClean}</span>`:''}
+          ${t.aguardando?`<span class="notion-badge espera">↳ ${t.aguardando}</span>`:''}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function setSection(id, cntId, items) {
+    const el = document.getElementById(id);
+    const cnt = document.getElementById(cntId);
+    if(!el) return;
+    if(cnt) cnt.textContent = items.length || '';
+    el.innerHTML = items.length
+      ? items.map(mkRow).join('')
+      : '<div style="padding:10px 14px;font-size:11px;color:var(--muted)">Nenhuma pendência ✓</div>';
+  }
+
+  setSection('gtd-urgente','cnt-urgente',urgentes);
+  setSection('gtd-soceron','cnt-soceron',byArea.soceron);
+  setSection('gtd-mestrado','cnt-mestrado',byArea.mestrado);
+  setSection('gtd-congresso','cnt-congresso',byArea.congresso);
+  setSection('gtd-viagens','cnt-viagens-gtd',byArea.viagens);
+  setSection('gtd-financas','cnt-financas',byArea.financas);
+  setSection('gtd-academia','cnt-academia',byArea.academia);
+
+  const esperaEl = document.getElementById('gtd-espera');
+  const cntE = document.getElementById('cnt-espera');
+  if(cntE) cntE.textContent = espera.length || '';
+  if(esperaEl) {
+    esperaEl.innerHTML = espera.length
+      ? espera.map(t=>`<div class="gtd-task"><div style="flex:1"><div class="gtd-task-text">${t.tarefa||'?'}</div>${t.aguardando?`<div class="gtd-task-meta">Aguardando: ${t.aguardando}</div>`:''}<div class="gtd-task-tags"><span class="notion-badge area">${t.area||''}</span><span class="notion-badge espera">em espera</span></div></div></div>`).join('')
+      : '<div style="padding:10px 0;font-size:11px;color:var(--muted)">Nenhum item em espera ✓</div>';
+  }
+}
+
+function renderViagensFromData(items) {
+  const card = document.getElementById('viagens-card');
+  if(!card) return;
+  function badge(label, val) {
+    if(!val) return '';
+    const v = (val||'').toLowerCase();
+    const cls = v.includes('ok')||v.includes('✅') ? 'vs-ok' : v.includes('urgente')||v.includes('🚨') ? 'vs-alert' : 'vs-pend';
+    return `<span class="vstatus ${cls}">${label}: ${val}</span>`;
+  }
+  card.innerHTML = items.map(v=>`
+    <div class="vrow">
+      <div class="vdata">${v.periodo||v.data||''}</div>
+      <div>
+        <div class="vnome">${v.destino||'?'}</div>
+        <div class="vsub">${v.motivo||''}</div>
+        <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">
+          ${badge('Passagens',v.passagens)}
+          ${badge('Hotel',v.hotel)}
+          ${badge('Passeios',v.passeios)}
+        </div>
+        ${v.obs?`<div style="font-size:10px;color:var(--muted);margin-top:3px">${v.obs}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ===== STORAGE + STATE =====
+let STATE = {};
+let syncTimer = null;
+
+function setSyncStatus(s, l) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if(dot) dot.className = 'sync-dot ' + s;
+  if(lbl) lbl.textContent = l;
+}
+
+// Carrega IMEDIATAMENTE do localStorage — sem esperar Firebase
+function loadFromCloud() {
+  try {
+    const local = localStorage.getItem('mm-luiz-2026');
+    STATE = local ? JSON.parse(local) : getDefaultState();
+  } catch(e) {
+    STATE = getDefaultState();
+  }
+  setSyncStatus('ok', 'Carregado ✓');
+  // Tenta sincronizar com Firebase em background (sem bloquear)
+  syncFromFirebase();
+  return Promise.resolve();
+}
+
+// Sincronização Firebase em background
+async function syncFromFirebase() {
+  try {
+    if(!window.fbLoad) return;
+    const data = await window.fbLoad();
+    if(data) {
+      const remote = JSON.parse(data);
+      STATE = remote;
+      localStorage.setItem('mm-luiz-2026', data);
+      setSyncStatus('ok', 'Firebase ✓');
+      // Re-renderiza com dados do Firebase
+      renderAfirmacoes();
+      renderViz('viz-mm');renderViz('viz-diary');
+      initMM();initDiary();initIdiomas();initLeitura();initAF();initEstudos();
+      loadHermesData();
+    }
+  } catch(e) {
+    console.log('Firebase background sync:', e.message);
+    setSyncStatus('ok', 'Local ✓');
+  }
+}
+
+async function saveToCloud() {
+  const data = JSON.stringify(STATE);
+  // Salva local SEMPRE e imediatamente
+  localStorage.setItem('mm-luiz-2026', data);
+  setSyncStatus('ok', 'Salvo ✓');
+  // Tenta Firebase em background
+  try {
+    if(window.fbSave) {
+      window.fbSave(data).then(ok => {
+        if(ok) setSyncStatus('ok', 'Firebase ✓');
+      }).catch(e => console.log('Firebase save bg:', e.message));
+    }
+  } catch(e) {}
+}
+
+function scheduleSave() { clearTimeout(syncTimer); syncTimer = setTimeout(saveToCloud, 1000); }
+
+
+
+// ===== NAV =====
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el) el.classList.add('active');
+  if(id === 'evolucao') buildEvolution();
+}
+
+// ===== DEFAULTS =====
+const JUN_DATA = {
+  // Dados exatos do arquivo Milagre da Manhã 2026 — até dia 16/06
+  silencio:    [1,1,1,1,1,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  afirmacao:   [1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  visualizacao:[1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  escrita:     [1,1,1,1,0,1,0,0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  leitura:     [1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  exercicio:   [0,0,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  idiomas:     [1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  hemodinamica:[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  cardiologia: [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  financas:    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  dieta:       [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+};
+const HIST_HABITS = {
+  silencio:{jan:18,fev:3,mar:25,abr:17,mai:21},afirmacao:{jan:22,fev:3,mar:25,abr:18,mai:22},
+  visualizacao:{jan:22,fev:3,mar:25,abr:18,mai:22},exercicio:{jan:25,fev:1,mar:29,abr:16,mai:31},
+  leitura:{jan:8,fev:0,mar:25,abr:17,mai:25},escrita:{jan:20,fev:3,mar:25,abr:18,mai:22},
+  idiomas:{jan:13,fev:0,mar:2,abr:4,mai:19},hemodinamica:{jan:0,fev:1,mar:4,abr:2,mai:3},
+  cardiologia:{jan:1,fev:0,mar:6,abr:4,mai:9},financas:{jan:3,fev:0,mar:0,abr:0,mai:1},dieta:{jan:8,fev:0,mar:0,abr:0,mai:0}
+};
+
+function getDefaultHabits() {
+  const h = {};
+  Object.keys(JUN_DATA).forEach(key => {
+    JUN_DATA[key].forEach((v,i) => {
+      if(v) { const ds=`2026-06-${String(i+1).padStart(2,'0')}`; if(!h[ds])h[ds]={}; h[ds][key]=1; }
+    });
+  });
+  return h;
+}
+
+function getDefaultState() {
+  return {
+    habits: getDefaultHabits(),
+    idiomas: {'2026-06-01':{duolingo:1,poli:1},'2026-06-02':{duolingo:1,poli:1},'2026-06-03':{duolingo:1},'2026-06-04':{duolingo:1},'2026-06-05':{duolingo:1},'2026-06-06':{duolingo:1},'2026-06-07':{duolingo:1},'2026-06-08':{duolingo:1},'2026-06-09':{duolingo:1},'2026-06-10':{duolingo:1},'2026-06-11':{duolingo:1},'2026-06-12':{duolingo:1},'2026-06-13':{duolingo:1},'2026-06-14':{duolingo:1},'2026-06-15':{duolingo:1},'2026-06-16':{duolingo:1},'2026-06-17':{duolingo:1},'2026-06-18':{duolingo:1},'2026-06-19':{duolingo:1},'2026-06-20':{duolingo:1},'2026-06-21':{duolingo:1},'2026-06-22':{duolingo:1},'2026-06-23':{duolingo:1},'2026-06-24':{duolingo:1},'2026-06-25':{duolingo:1},'2026-06-26':{duolingo:1},'2026-06-27':{duolingo:1},'2026-06-28':{duolingo:1},'2026-06-29':{duolingo:1},'2026-06-30':{duolingo:1}},
+    diary: {
+      '2026-06-01':'Ontem o dia foi bem tranquilo, acabei viajando para São Paulo e fiquei organizando várias pendências.',
+      '2026-06-02':'Ontem o dia foi bem proveitoso, porém cansativo, tive o curso sobre o Pascal em SP.',
+      '2026-06-03':'Ontem o dia foi bem cansativo, cheguei de madrugada de viagem.',
+      '2026-06-04':'Ontem o dia foi bem tranquilo, com o dia cheio de consultório e consegui finalizar a organização dos gastos de casa!',
+      '2026-06-06':'Ontem consegui finalizar toda a organização financeira e começar a fazer os investimentos!',
+      '2026-06-09':'Ontem o dia foi muito bom! Tive aula do mestrado e consegui organizar várias atividades.',
+      '2026-06-10':'Ontem o dia foi bem tranquilo! Consegui automatizar algumas atividades do consultório.',
+      '2026-06-11':'Ontem o dia foi muito legal. Pela manhã e à tarde atendi no consultório.',
+      '2026-06-12':'Ontem o dia foi bem corrido… Procedimentos pela manhã, aulas à tarde.',
+      '2026-06-13':'Ontem o dia foi corrido, acabou enrolando o consultório de manhã e acabei não conseguindo realizar boa parte dos projetos que estou planejando… tenho muitas coisas para concluir ainda.',
+      '2026-06-14':'Ontem o dia foi muito corrido, mas divertido… fui na escola das crianças trocar figurinhas… porém ainda muito difícil organizar tudo… no restante do dia fui para o shopping ajudar em uma ação da MedUNIR e após assistir o jogo do Brasil na casa do meu irmão.',
+      '2026-06-15':'Ontem o dia foi bem tranquilo… passei o dia com a família e tentando configurar o meu MM, porém pouco produzi… acabei tentando fazer muitas coisas ao mesmo tempo… no fim não conclui nada… hoje vou resolver uma por vez.',
+      '2026-06-16':'Ontem fiz vários procedimentos… que conseguimos bons resultados… os pacientes evoluíram bem e conseguimos resolver boa parte das pendências… Hoje é o dia de resolver a parte do consultório e desenrolar a parte da SOCERON.',
+    },
+    books: [{id:'b1',title:'Getting Things Done',author:'David Allen',pct:35},{id:'b2',title:'Miracle Morning',author:'Hal Elrod',pct:100}],
+    af: {'2026-06-03':'musc','2026-06-04':'aerob','2026-06-05':'musc','2026-06-06':'musc','2026-06-07':'aerob','2026-06-09':'aerob','2026-06-10':'musc','2026-06-12':'musc','2026-06-13':'musc'},
+    studies: [
+      {id:'st1',title:'TAVI — protocolo pós-procedimento',area:'hemo',status:'doing'},
+      {id:'st2',title:'Angioplastia complexa — revisão',area:'hemo',status:'todo'},
+      {id:'st3',title:'Valvopatias — diretriz 2025',area:'cardio',status:'todo'},
+      {id:'st4',title:'Inglês — vocabulário médico',area:'ingles',status:'doing'},
+      {id:'st5',title:'Insuficiência cardíaca — atualização',area:'cardio',status:'todo'},
+      {id:'st6',title:'Planejamento financeiro pessoal',area:'financas',status:'todo'},
+    ],
+    viz_images: [null,null,null,null,null,null],
+  };
+}
+
+// ===== DATE — já declarado no topo =====
+
+// ===== AFIRMAÇÕES =====
+const AFIRMACOES = [
+  'Eu sou um exemplo de <strong>amor e estabilidade</strong> para minha família, dedicando <strong>tempo de qualidade</strong> e fortalecendo nossos laços diariamente.',
+  'Eu estou constantemente <strong>evoluindo como profissional</strong>, tornando-me uma <strong>referência em hemodinâmica e cardiologia</strong> na região Norte.',
+  'Meu <strong>corpo e mente são prioridades</strong>; pratico exercícios regularmente e escolho uma <strong>alimentação saudável</strong> para manter minha energia e vitalidade.',
+  'Eu sou <strong>disciplinado em meus estudos</strong> e cresço a cada dia como médico, professor e investidor, alcançando minhas metas com <strong>determinação</strong>.',
+  'Eu administro meu tempo com <strong>sabedoria</strong>, equilibrando minha carreira e a <strong>convivência com minha esposa e filhos</strong>.',
+  'Cada dia é uma oportunidade de <strong>impactar positivamente as pessoas</strong> ao meu redor, ajudando-as com meu <strong>conhecimento e experiência</strong>.',
+  'Eu construo uma <strong>base financeira sólida</strong>, investindo com sabedoria e assegurando um <strong>futuro próspero</strong> para minha família.',
+  'Minha rotina matinal me energiza e me prepara para enfrentar o dia com <strong>foco, clareza e gratidão</strong>.',
+  'Eu sou <strong>paciente e resiliente</strong>, superando desafios com serenidade e aprendendo com cada experiência.',
+  'Eu me dedico à <strong>excelência em todas as áreas</strong> da minha vida, tornando cada dia mais <strong>produtivo e significativo</strong>.',
+];
+function renderAfirmacoes(){const h=AFIRMACOES.map((a,i)=>`<div class="afirm-item"><span class="afirm-num">${i+1}</span><span>${a}</span></div>`).join('');['afirm-mm','afirm-diary'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=h;});}
+
+// ===== VIZ =====
+const VIZ_LABELS=['Família feliz','Saúde e corpo','Consultório referência','Patrimônio 2026','Viagens mundo','Legado médico'];
+function renderViz(gridId){
+  const imgs=STATE.viz_images||[null,null,null,null,null,null];
+  const grid=document.getElementById(gridId);if(!grid)return;
+  grid.innerHTML=imgs.map((img,i)=>`<div class="viz-slot" onclick="triggerVizUpload(${i})">${img?`<img src="${img}"><div class="viz-label">${VIZ_LABELS[i]}</div><button class="viz-del" onclick="event.stopPropagation();delViz(${i})">✕</button>`:`<div class="viz-add"><span>📷</span><span>${VIZ_LABELS[i]}</span></div>`}</div>`).join('');
+}
+function triggerVizUpload(idx){const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{if(!STATE.viz_images)STATE.viz_images=[null,null,null,null,null,null];STATE.viz_images[idx]=ev.target.result;scheduleSave();renderViz('viz-mm');renderViz('viz-diary');};r.readAsDataURL(f);};inp.click();}
+function delViz(idx){STATE.viz_images[idx]=null;scheduleSave();renderViz('viz-mm');renderViz('viz-diary');}
+
+// ===== MM =====
+function getHabit(key,ds){return STATE.habits&&STATE.habits[ds]&&STATE.habits[ds][key]?1:0;}
+function setHabit(key,ds,val){if(!STATE.habits)STATE.habits={};if(!STATE.habits[ds])STATE.habits[ds]={};if(val)STATE.habits[ds][key]=1;else delete STATE.habits[ds][key];}
+function getMonthTotal(key,y,m){let t=0;for(let d=1;d<=daysInMonth(y,m);d++)t+=getHabit(key,`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);return t;}
+function getHistTotal(key,mk){return HIST_HABITS[key]&&HIST_HABITS[key][mk]?HIST_HABITS[key][mk]:0;}
+
+const SAVERS_DEF=[{key:'silencio',label:'🧘 Silêncio'},{key:'afirmacao',label:'💬 Afirmação'},{key:'visualizacao',label:'🎯 Visualização'},{key:'exercicio',label:'💪 Exercício'},{key:'leitura',label:'📖 Leitura'},{key:'escrita',label:'✍️ Escrita'},{key:'idiomas',label:'🗣️ Idiomas'},{key:'hemodinamica',label:'🫀 Hemodinâmica'},{key:'cardiologia',label:'❤️ Cardiologia'},{key:'financas',label:'💰 Finanças'},{key:'dieta',label:'🥗 Dieta'}];
+
+function initMM(){
+  const dn=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+  document.getElementById('mm-date').textContent=`${dn[NOW.getDay()]}, ${CUR_DAY} de ${MONTH_NAMES[CUR_MONTH]}`;
+  document.getElementById('diary-date').textContent=document.getElementById('mm-date').textContent;
+  const td=(STATE.habits&&STATE.habits[TODAY])||{};
+  let cnt=0;
+  document.querySelectorAll('.mm-item').forEach(el=>{if(td[el.dataset.saver]){el.classList.add('done');cnt++;}else el.classList.remove('done');});
+  updMMScore(cnt);
+  buildMonthNav();
+  buildTableForMonth(VIEW_YEAR,VIEW_MONTH);
+  updStatsForMonth(VIEW_YEAR,VIEW_MONTH);
+}
+
+function toggleSaver(el){
+  const s=el.dataset.saver;
+  const cur=getHabitForDate(s,TODAY);
+  setHabit(s,TODAY,!cur);
+  el.classList.toggle('done',!cur);
+  updMMScore(document.querySelectorAll('.mm-item.done').length);
+  buildTableForMonth(VIEW_YEAR,VIEW_MONTH);
+  updStatsForMonth(VIEW_YEAR,VIEW_MONTH);
+  scheduleSave();
+}
+function updMMScore(n){document.getElementById('mm-score').innerHTML=`${n}<span>/6</span>`;document.getElementById('mm-badge').textContent=`${n}/6`;}
+function buildTable(){buildTableForMonth(VIEW_YEAR,VIEW_MONTH);}
+function toggleDay(key,ds,el){if(el.classList.contains('future'))return;const cur=getHabitForDate(key,ds);setHabit(key,ds,!cur);el.classList.toggle('done',!cur);buildTableForMonth(VIEW_YEAR,VIEW_MONTH);updStatsForMonth(VIEW_YEAR,VIEW_MONTH);scheduleSave();}
+function updStats(){updStatsForMonth(VIEW_YEAR,VIEW_MONTH);}
+
+// ===== DIÁRIO =====
+let DIARY_EDIT_DATE = TODAY;
+
+function initDiary(){
+  // Inicializa o seletor de data com hoje
+  const picker = document.getElementById('diary-date-picker');
+  if(picker) picker.value = TODAY;
+  loadDiaryForDate(TODAY);
+  loadDiaryEntries();
+  document.getElementById('diary-today').addEventListener('input',function(){
+    if(!STATE.diary)STATE.diary={};
+    STATE.diary[DIARY_EDIT_DATE]=this.value;
+    document.getElementById('diary-saved-label').textContent='Salvando...';
+    scheduleSave();
+    setTimeout(()=>document.getElementById('diary-saved-label').textContent='Salvo ✓',1000);
+  });
+}
+
+function switchDiaryDate(dateStr){
+  if(!dateStr) return;
+  // Salva o que estava escrito antes de trocar
+  const current = document.getElementById('diary-today').value;
+  if(current){
+    if(!STATE.diary)STATE.diary={};
+    STATE.diary[DIARY_EDIT_DATE]=current;
+    scheduleSave();
+  }
+  DIARY_EDIT_DATE = dateStr;
+  loadDiaryForDate(dateStr);
+}
+
+function loadDiaryForDate(dateStr){
+  DIARY_EDIT_DATE = dateStr;
+  const isToday = dateStr === TODAY;
+  const titleEl = document.getElementById('diary-entry-title');
+  if(titleEl) titleEl.textContent = isToday ? 'Entrada de hoje' : `Entrada — ${formatDate(dateStr)}`;
+  const saved = STATE.diary&&STATE.diary[dateStr] ? STATE.diary[dateStr] : '';
+  document.getElementById('diary-today').value = saved;
+  document.getElementById('diary-saved-label').textContent = saved ? 'Salvo ✓' : '';
+}
+
+function saveDiary(){
+  if(!STATE.diary)STATE.diary={};
+  STATE.diary[DIARY_EDIT_DATE]=document.getElementById('diary-today').value;
+  saveToCloud();
+  document.getElementById('diary-saved-label').textContent='Salvo ✓';
+  loadDiaryEntries();
+}
+function loadDiaryEntries(){
+  const entries=STATE.diary||{};
+  const el=document.getElementById('diary-past');
+  const sorted=Object.keys(entries).sort().reverse().filter(k=>k!==TODAY);
+  if(!sorted.length){el.innerHTML='<div style="padding:16px;font-size:12px;color:var(--muted);text-align:center">Nenhuma entrada ainda.</div>';return;}
+  el.innerHTML=sorted.map(k=>{const[y,m,d]=k.split('-');return`<div class="diary-entry"><div class="diary-entry-date">${parseInt(d)} de ${MONTH_SHORT[parseInt(m)-1]} de ${y}</div><div class="diary-entry-text">${entries[k]}</div></div>`;}).join('');
+}
+
+// ===== IDIOMAS =====
+function getIdioma(key,ds){return STATE.idiomas&&STATE.idiomas[ds]&&STATE.idiomas[ds][key]?1:0;}
+function initIdiomas(){
+  const td=(STATE.idiomas&&STATE.idiomas[TODAY])||{};
+  let cnt=0;
+  document.querySelectorAll('.idioma-card').forEach(el=>{if(td[el.dataset.idioma]){el.classList.add('done');cnt++;}else el.classList.remove('done');});
+  updIdiomaScore(cnt);buildIdiomaTable();updIdiomaStats();
+}
+function toggleIdioma(el){const k=el.dataset.idioma;if(!STATE.idiomas)STATE.idiomas={};if(!STATE.idiomas[TODAY])STATE.idiomas[TODAY]={};const cur=STATE.idiomas[TODAY][k];if(cur)delete STATE.idiomas[TODAY][k];else STATE.idiomas[TODAY][k]=1;el.classList.toggle('done',!cur);updIdiomaScore(document.querySelectorAll('.idioma-card.done').length);buildIdiomaTable();updIdiomaStats();scheduleSave();}
+function updIdiomaScore(n){document.getElementById('idioma-score').innerHTML=`${n}<span>/3</span>`;document.getElementById('idioma-badge').textContent=`${n}/3`;}
+function buildIdiomaTable(){
+  let head=`<tr><th class="hn">Prática</th>`;
+  for(let d=1;d<=DAYS_IN_MONTH;d++){const isT=d===CUR_DAY;head+=`<th style="${isT?'color:var(--blue);font-weight:700':''}">${d}</th>`;}
+  head+='<th>T</th></tr>';
+  document.getElementById('id-head').innerHTML=head;
+  const rows=[{key:'poli',label:'👩‍🏫 Teacher Poli'},{key:'duolingo',label:'🦉 Duolingo'},{key:'conversacao',label:'🎙️ Conversação'}];
+  let body='';let gT=0,gP=0;
+  rows.forEach(({key,label})=>{
+    body+=`<tr><td class="habit-label">${label}</td>`;let tot=0;
+    for(let d=1;d<=DAYS_IN_MONTH;d++){
+      const fut=d>CUR_DAY;const isT=d===CUR_DAY;
+      const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const done=fut?0:getIdioma(key,ds);if(done&&!fut)tot++;
+      const cls=fut?'future':(done?'done-blue':'')+(isT?' today':'');
+      body+=`<td><div class="day-cell ${cls}" onclick="toggleIdDay('${key}','${ds}',this)">✓</div></td>`;
+    }
+    gT+=tot;gP+=CUR_DAY;body+=`<td class="habit-total" style="color:var(--blue)">${tot}</td></tr>`;
+  });
+  document.getElementById('id-body').innerHTML=body;
+  document.getElementById('id-bar').style.width=(gP>0?Math.round(gT/gP*100):0)+'%';
+}
+function toggleIdDay(key,ds,el){if(el.classList.contains('future'))return;if(!STATE.idiomas)STATE.idiomas={};if(!STATE.idiomas[ds])STATE.idiomas[ds]={};const cur=STATE.idiomas[ds][key];if(cur)delete STATE.idiomas[ds][key];else STATE.idiomas[ds][key]=1;el.classList.toggle('done-blue',!cur);buildIdiomaTable();updIdiomaStats();scheduleSave();}
+function updIdiomaStats(){['poli','duolingo','conversacao'].forEach(k=>{let t=0;for(let d=1;d<=CUR_DAY;d++){const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;t+=getIdioma(k,ds);}const el=document.getElementById('ist-'+k);if(el)el.textContent=t;});let dias=0;for(let d=1;d<=CUR_DAY;d++){const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(getIdioma('poli',ds)+getIdioma('duolingo',ds)+getIdioma('conversacao',ds)>0)dias++;}const el=document.getElementById('ist-total');if(el)el.textContent=dias;}
+
+// ===== LEITURA =====
+function initLeitura(){const books=STATE.books||[];document.getElementById('books-badge').textContent=books.length+' livros';document.getElementById('books-grid').innerHTML=books.map(b=>`<div class="book-card"><div class="book-title">${b.title}</div><div class="book-author">${b.author}</div><div style="display:flex;align-items:center;gap:8px;margin-top:6px"><input type="range" min="0" max="100" value="${b.pct}" style="flex:1;accent-color:var(--green)" oninput="updBook('${b.id}',this.value)"></div><div class="book-pct" id="bp-${b.id}">${b.pct}%</div><div class="book-progress"><div class="book-progress-fill" id="bpf-${b.id}" style="width:${b.pct}%"></div></div></div>`).join('');}
+function updBook(id,pct){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b)b.pct=parseInt(pct);document.getElementById('bp-'+id).textContent=pct+'%';document.getElementById('bpf-'+id).style.width=pct+'%';scheduleSave();}
+
+// ===== AF =====
+function initAF(){
+  const dn=['D','S','T','Q','Q','S','S'];const fd=new Date(CUR_YEAR,CUR_MONTH,1).getDay();
+  document.getElementById('af-month-title').textContent=`${MONTH_NAMES[CUR_MONTH]} ${CUR_YEAR}`;
+  const af=STATE.af||{};let html='';let musc=0,aerob=0;
+  for(let d=1;d<=DAYS_IN_MONTH;d++){
+    const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const tipo=af[ds]||'';const isFut=d>CUR_DAY;const dn2=dn[(fd+d-1)%7];
+    let em='',cls='';
+    if(tipo==='musc'){em='💪';cls='musc';if(!isFut)musc++;}
+    else if(tipo==='aerob'){em='🏃';cls='aerob';if(!isFut)aerob++;}
+    else if(tipo==='ambos'){em='🔥';cls='ambos';if(!isFut){musc++;aerob++;}}
+    html+=`<div class="af-day"><div class="af-day-label">${dn2}</div><div class="af-cell ${cls} ${isFut?'future':''}" onclick="cycleAF('${ds}',this)">${em}</div><div style="font-size:9px;color:var(--muted);text-align:center;margin-top:1px">${d}</div></div>`;
+  }
+  document.getElementById('af-grid').innerHTML=html;
+  document.getElementById('af-badge').textContent=`💪 ${musc} · 🏃 ${aerob}`;
+  document.getElementById('af-bar').style.width=Math.min(Math.round((musc+aerob)/(CUR_DAY*2)*100),100)+'%';
+  document.getElementById('af-label').textContent=`Musculação: ${musc} · Aeróbico: ${aerob} dias`;
+}
+function cycleAF(ds,el){if(el.classList.contains('future'))return;if(!STATE.af)STATE.af={};const tipos=['','musc','aerob','ambos'];const cur=STATE.af[ds]||'';const next=tipos[(tipos.indexOf(cur)+1)%tipos.length];if(next)STATE.af[ds]=next;else delete STATE.af[ds];scheduleSave();initAF();}
+
+// ===== ESTUDOS =====
+const ATAGS={hemo:'🫀 Hemodinâmica',cardio:'❤️ Cardiologia',ingles:'🗣️ Inglês',financas:'💰 Finanças'};
+const ACLS={hemo:'st-hemo',cardio:'st-cardio',ingles:'st-ingles',financas:'st-financas'};
+function initEstudos(){
+  const studies=STATE.studies||[];
+  ['todo','doing','done'].forEach(s=>{
+    const items=studies.filter(x=>x.status===s);
+    document.getElementById('study-'+s).innerHTML=items.map(x=>`
+      <div class="study-card ${x.status==='done'?'sdone':''}" style="display:flex;align-items:flex-start;gap:6px">
+        <div onclick="cycleStudy('${x.id}')" style="flex:1;cursor:pointer">
+          <div class="study-card-title">${x.title}</div>
+          <span class="study-tag ${ACLS[x.area]||''}">${ATAGS[x.area]||x.area}</span>
+          <span style="font-size:9px;color:var(--muted);margin-left:4px">${x.status==='todo'?'→ estudando':x.status==='doing'?'→ concluído':''}</span>
+        </div>
+        <button onclick="deleteStudy('${x.id}')" style="background:none;border:none;cursor:pointer;font-size:12px;color:var(--muted);padding:2px;flex-shrink:0;margin-top:2px" title="Apagar">✕</button>
+      </div>`).join('');
+    document.getElementById('sc-'+s).textContent=items.length;
+  });
+}
+function cycleStudy(id){if(!STATE.studies)return;const s=STATE.studies.find(x=>x.id===id);if(!s)return;const f=['todo','doing','done'];s.status=f[(f.indexOf(s.status)+1)%f.length];scheduleSave();initEstudos();}
+function deleteStudy(id){if(!STATE.studies)return;STATE.studies=STATE.studies.filter(x=>x.id!==id);scheduleSave();initEstudos();}
+
+// ===== EVOLUÇÃO =====
+let chartsBuilt=false;
+function buildEvolution(){buildHeatmap();buildYearStats();if(!chartsBuilt){chartsBuilt=true;buildCharts();}}
+function buildHeatmap(){
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  let html='';
+  for(let m=0;m<12;m++){
+    const days=daysInMonth(CUR_YEAR,m);const isPast=m<CUR_MONTH;const isCur=m===CUR_MONTH;const maxDay=isCur?CUR_DAY:(isPast?days:0);
+    html+=`<div class="heatmap-month"><div class="heatmap-month-label">${months[m]}</div><div class="heatmap-days">`;
+    for(let d=1;d<=days;d++){
+      if(d>maxDay){html+=`<div class="hmap-cell"></div>`;continue;}
+      const ds=`${CUR_YEAR}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      let score=0;SAVERS_DEF.forEach(({key})=>{score+=getHabitForDate(key,ds);});
+      const lvl=score>=9?'l4':score>=6?'l3':score>=3?'l2':score>0?'l1':'';
+      html+=`<div class="hmap-cell ${lvl}" title="${ds}: ${score}"></div>`;
+    }
+    html+='</div></div>';
+  }
+  document.getElementById('heatmap').innerHTML=html;
+}
+function buildYearStats(){
+  const mkeys=['jan','fev','mar','abr','mai'];
+  const daysYTD=Math.floor((NOW-new Date(CUR_YEAR,0,1))/86400000)+1;
+  const y={
+    silencio:mkeys.reduce((s,k)=>s+getHistTotal('silencio',k),0)+getMonthTotal('silencio',CUR_YEAR,CUR_MONTH),
+    exercicio:mkeys.reduce((s,k)=>s+getHistTotal('exercicio',k),0)+getMonthTotal('exercicio',CUR_YEAR,CUR_MONTH),
+    leitura:mkeys.reduce((s,k)=>s+getHistTotal('leitura',k),0)+getMonthTotal('leitura',CUR_YEAR,CUR_MONTH),
+    idiomas:mkeys.reduce((s,k)=>s+getHistTotal('idiomas',k),0)+getMonthTotal('idiomas',CUR_YEAR,CUR_MONTH),
+    hemo:mkeys.reduce((s,k)=>s+getHistTotal('hemodinamica',k),0)+getMonthTotal('hemodinamica',CUR_YEAR,CUR_MONTH),
+    cardio:mkeys.reduce((s,k)=>s+getHistTotal('cardiologia',k),0)+getMonthTotal('cardiologia',CUR_YEAR,CUR_MONTH),
+  };
+  document.getElementById('year-grid').innerHTML=`
+    <div class="year-stat"><div class="year-stat-num">${y.silencio}</div><div class="year-stat-label">🧘 Silêncio</div><div class="year-stat-label" style="font-size:9px">de ${daysYTD} dias</div></div>
+    <div class="year-stat"><div class="year-stat-num">${y.exercicio}</div><div class="year-stat-label">💪 Exercício</div><div class="year-stat-label" style="font-size:9px">meta: 156 dias</div></div>
+    <div class="year-stat"><div class="year-stat-num">${y.leitura}</div><div class="year-stat-label">📖 Leitura</div><div class="year-stat-label" style="font-size:9px">meta: ${daysYTD} dias</div></div>
+    <div class="year-stat"><div class="year-stat-num">${y.idiomas}</div><div class="year-stat-label">🗣️ Idiomas</div></div>
+    <div class="year-stat"><div class="year-stat-num">${y.hemo}</div><div class="year-stat-label">🫀 Hemodinâmica</div></div>
+    <div class="year-stat"><div class="year-stat-num">${y.cardio}</div><div class="year-stat-label">❤️ Cardiologia</div></div>`;
+}
+function getMonthlyData(key){const mkeys=['jan','fev','mar','abr','mai'];const r=mkeys.map(k=>getHistTotal(key,k));r.push(getMonthTotal(key,CUR_YEAR,CUR_MONTH));return r;}
+function buildCharts(){
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10},boxWidth:12}}},scales:{y:{max:31,ticks:{font:{size:9}}},x:{ticks:{font:{size:10}}}}};
+  new Chart(document.getElementById('chart-savers').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Silêncio',data:getMonthlyData('silencio'),backgroundColor:'#2D6A4F'},{label:'Afirmação',data:getMonthlyData('afirmacao'),backgroundColor:'#52B788'},{label:'Exercício',data:getMonthlyData('exercicio'),backgroundColor:'#1D4ED8'},{label:'Leitura',data:getMonthlyData('leitura'),backgroundColor:'#6D28D9'}]},options:opts});
+  new Chart(document.getElementById('chart-exercicio').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Musculação',data:[16,1,15,10,16,getMonthTotal('exercicio',CUR_YEAR,CUR_MONTH)],borderColor:'#1D4ED8',backgroundColor:'rgba(29,78,216,.1)',tension:.3,fill:true},{label:'Aeróbico',data:[9,0,14,6,15,4],borderColor:'#52B788',backgroundColor:'rgba(82,183,136,.1)',tension:.3,fill:true}]},options:opts});
+  new Chart(document.getElementById('chart-estudos').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Hemodinâmica',data:getMonthlyData('hemodinamica'),borderColor:'#6D28D9',backgroundColor:'rgba(109,40,217,.1)',tension:.3,fill:true},{label:'Cardiologia',data:getMonthlyData('cardiologia'),borderColor:'#B91C1C',backgroundColor:'rgba(185,28,28,.1)',tension:.3,fill:true},{label:'Idiomas',data:getMonthlyData('idiomas'),borderColor:'#B45309',backgroundColor:'rgba(180,83,9,.1)',tension:.3,fill:true}]},options:opts});
+}
+
+// ===== MODAL =====
+let mType='';
+function openModal(type){mType=type;const body=document.getElementById('modal-body');if(type==='book'){document.getElementById('modal-title').textContent='Adicionar livro';body.innerHTML=`<input id="mi-title" placeholder="Título"><input id="mi-author" placeholder="Autor"><input id="mi-pct" type="number" min="0" max="100" value="0" placeholder="% lido">`;}else if(type==='study'){document.getElementById('modal-title').textContent='Novo tema de estudo';body.innerHTML=`<input id="mi-st" placeholder="Tema de estudo"><select id="mi-sa"><option value="hemo">🫀 Hemodinâmica</option><option value="cardio">❤️ Cardiologia</option><option value="ingles">🗣️ Inglês</option><option value="financas">💰 Finanças</option></select>`;}document.getElementById('modal-overlay').classList.add('open');}
+function saveModal(){if(mType==='book'){if(!STATE.books)STATE.books=[];STATE.books.push({id:'b'+Date.now(),title:document.getElementById('mi-title').value||'Sem título',author:document.getElementById('mi-author').value||'',pct:parseInt(document.getElementById('mi-pct').value)||0});scheduleSave();initLeitura();}else if(mType==='study'){if(!STATE.studies)STATE.studies=[];STATE.studies.push({id:'st'+Date.now(),title:document.getElementById('mi-st').value||'Sem título',area:document.getElementById('mi-sa').value,status:'todo'});scheduleSave();initEstudos();}document.getElementById('modal-overlay').classList.remove('open');}
+
+// ===== INIT =====
+// ===== EXPORTAR EVOLUÇÃO =====
+function exportEvolution(){
+  const months = ['jan','fev','mar','abr','mai','jun'];
+  const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho'];
+  const habits = ['silencio','afirmacao','visualizacao','escrita','leitura','exercicio','idiomas','hemodinamica','cardiologia','financas','dieta'];
+  const habitLabels = ['Silêncio','Afirmação','Visualização','Escrita','Leitura','Exercício','Idiomas','Hemodinâmica','Cardiologia','Finanças','Dieta'];
+
+  let csv = 'Hábito,' + monthNames.join(',') + ',Total\n';
+
+  habits.forEach((key, i) => {
+    const vals = months.map((mk, mi) => {
+      if(mi < 5) return getHistTotal(key, mk);
+      return getMonthTotal(key, CUR_YEAR, CUR_MONTH);
+    });
+    const total = vals.reduce((a,b)=>a+b,0);
+    csv += `${habitLabels[i]},${vals.join(',')},${total}
+`;
+  });
+
+  // Adiciona linha de dias possíveis
+  csv += '\nDias no mês,31,28,31,30,31,30\n';
+  csv += `Data de exportação,${new Date().toLocaleDateString('pt-BR')}
+`;
+
+  const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `MilagreManha_Evolucao_${CUR_YEAR}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function init(){
+  loadFromCloud(); // síncrono — carrega local e dispara Firebase em bg
+  renderAfirmacoes();
+  renderViz('viz-mm');renderViz('viz-diary');
+  initMM();initDiary();initIdiomas();initLeitura();initAF();initEstudos();
+  loadHermesData();
+}
+init();
+</script>
+</body>
+</html>

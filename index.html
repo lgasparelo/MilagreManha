@@ -246,6 +246,49 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 </head>
 <body>
 
+<!-- TELA DE SENHA -->
+<div id="lock-screen" style="position:fixed;inset:0;background:#F7F6F3;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px">
+  <div style="text-align:center;margin-bottom:8px">
+    <div style="font-size:40px;margin-bottom:8px">🌅</div>
+    <div style="font-size:20px;font-weight:600;color:#1A1917">Milagre da Manhã</div>
+    <div style="font-size:13px;color:#787672;margin-top:4px">Dr. Luiz Henrique Gasparelo</div>
+  </div>
+  <div style="background:#fff;border:1px solid #E8E6E0;border-radius:12px;padding:24px;width:280px;text-align:center">
+    <div style="font-size:13px;color:#787672;margin-bottom:12px">Digite a senha para acessar</div>
+    <input id="senha-input" type="password" maxlength="10"
+      style="width:100%;border:1.5px solid #E8E6E0;border-radius:8px;padding:10px;font-size:18px;text-align:center;letter-spacing:6px;font-family:-apple-system,sans-serif;outline:none;background:#F7F6F3"
+      onkeydown="if(event.key==='Enter')checkSenha()"
+      oninput="document.getElementById('senha-err').textContent=''"
+      autofocus>
+    <div id="senha-err" style="font-size:11px;color:#B91C1C;margin-top:8px;height:16px"></div>
+    <button onclick="checkSenha()"
+      style="margin-top:12px;width:100%;background:#2D6A4F;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:-apple-system,sans-serif">
+      Entrar
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  // Verifica se já está autenticado nesta sessão
+  if(sessionStorage.getItem('mm-auth')==='ok'){
+    document.getElementById('lock-screen').style.display='none';
+  }
+})();
+function checkSenha(){
+  const v = document.getElementById('senha-input').value;
+  if(v==='3143'){
+    sessionStorage.setItem('mm-auth','ok');
+    document.getElementById('lock-screen').style.display='none';
+    document.getElementById('senha-input').value='';
+  } else {
+    document.getElementById('senha-err').textContent='Senha incorreta';
+    document.getElementById('senha-input').value='';
+    document.getElementById('senha-input').focus();
+  }
+}
+</script>
+
 <div class="sync-bar"><div class="sync-fill" id="sync-fill"></div></div>
 <div class="sync-badge" id="sync-badge"><div class="sync-dot" id="sync-dot"></div><span id="sync-label">Carregando...</span></div>
 

@@ -61,17 +61,63 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 .mm-name{font-size:11px;font-weight:600}
 .mm-check{width:18px;height:18px;border:1.5px solid var(--border);border-radius:50%;margin:5px auto 0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;color:transparent}
 .mm-item.done .mm-check{background:var(--green);border-color:var(--green);color:#fff}
+/* METAS DIÁRIAS */
+.goal-item{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#fff;border-radius:6px;margin-bottom:5px;border:1px solid var(--border)}
+.goal-check{width:22px;height:22px;border-radius:5px;border:2px solid var(--amber);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;color:transparent;font-size:12px;font-weight:700;transition:all .15s}
+.goal-check.done{background:var(--amber);color:#fff}
+.goal-text{flex:1;font-size:13px;line-height:1.4;color:var(--text)}
+.goal-text.done{text-decoration:line-through;color:var(--muted)}
+.goal-del{background:none;border:none;cursor:pointer;font-size:14px;color:var(--muted);padding:2px 6px;flex-shrink:0}
+.goal-del:hover{color:var(--red)}
+/* METAS DO MÊS */
+.mgoal-group{margin-bottom:14px}
+.mgoal-group:last-child{margin-bottom:0}
+.mgoal-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;padding:0 2px}
+.mgoal-title{font-size:13px;font-weight:700;color:var(--blue)}
+.mgoal-desc{font-size:10px;color:var(--muted);font-weight:400;margin-left:6px}
+.mgoal-progress-txt{font-size:11px;color:var(--blue);font-weight:600}
+.mgoal-bar{height:6px;background:rgba(29,78,216,.15);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.mgoal-bar-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .3s}
+.mgoal-item{display:flex;align-items:center;gap:10px;padding:7px 10px;background:#fff;border-radius:5px;margin-bottom:4px;border:1px solid rgba(29,78,216,.2)}
+.mgoal-check{width:20px;height:20px;border-radius:5px;border:2px solid var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;color:transparent;font-size:11px;font-weight:700;transition:all .15s}
+.mgoal-check.done{background:var(--blue);color:#fff}
+.mgoal-text{flex:1;font-size:12px;line-height:1.4;color:var(--text)}
+.mgoal-text.done{text-decoration:line-through;color:var(--muted)}
+.mgoal-add-row{display:flex;gap:6px;margin-top:6px}
+.mgoal-add-row input{flex:1;border:1px solid var(--border);border-radius:5px;padding:6px 8px;font-size:12px;font-family:var(--font);background:#fff;color:var(--text);outline:none}
+.mgoal-add-row button{background:var(--blue);color:#fff;border:none;padding:6px 10px;border-radius:5px;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600}
+/* EVOLUÇÃO — barras metas mensais */
+.mev-nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.mev-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;font-family:var(--font)}
+.mev-btn:hover{border-color:var(--blue);color:var(--blue)}
+.mev-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
+.mev-btn.future{opacity:.35;cursor:default;pointer-events:none}
+.mev-month{margin-bottom:16px}
+.mev-month-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:10px}
+.mev-row{margin-bottom:10px}
+.mev-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text);margin-bottom:4px}
+.mev-label-name{font-weight:500}
+.mev-label-val{color:var(--blue);font-weight:600}
+.mev-track{height:8px;background:var(--gray);border-radius:4px;overflow:hidden}
+.mev-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
+.mev-empty{font-size:11px;color:var(--muted);font-style:italic;padding:6px 0;text-align:center}
+.mev-items{margin-top:6px;padding-left:6px;border-left:2px solid rgba(29,78,216,.15)}
+.mev-item{display:flex;align-items:center;gap:8px;padding:4px 8px;font-size:11px;color:var(--text)}
+.mev-item-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--blue);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#fff;color:transparent;font-size:9px;font-weight:700}
+.mev-item-check.done{background:var(--blue);color:#fff}
+.mev-item-text{flex:1;line-height:1.3}
+.mev-item-text.done{text-decoration:line-through;color:var(--muted)}
 .mm-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .mm-score{font-size:20px;font-weight:700;color:var(--green)}
 .mm-score span{font-size:11px;font-weight:400;color:var(--muted);margin-left:3px}
 /* AFIRMAÇÕES */
 .afirm-list{padding:10px 14px;display:flex;flex-direction:column;gap:7px}
-.afirm-item{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;background:var(--green-light);border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:14px;line-height:1.65;color:var(--text)}
+.afirm-item{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--green-light);border-left:3px solid var(--green);border-radius:0 6px 6px 0;font-size:16px;line-height:1.65;color:var(--text)}
 .afirm-item strong{color:var(--green);font-weight:700}
-.afirm-num{font-size:11px;font-weight:700;color:var(--green);min-width:18px;padding-top:2px;flex-shrink:0}
+.afirm-num{font-size:13px;font-weight:700;color:var(--green);min-width:20px;padding-top:2px;flex-shrink:0}
 /* VIZ */
-.viz-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:12px 14px}
-.viz-slot{border:1.5px dashed var(--border);border-radius:var(--r);aspect-ratio:4/3;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative;background:var(--bg)}
+.viz-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:12px 14px}
+.viz-slot{border:1.5px dashed var(--border);border-radius:var(--r);aspect-ratio:3/2;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;overflow:hidden;position:relative;background:var(--bg)}
 .viz-slot:hover{border-color:var(--green)}
 .viz-slot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px}
 .viz-slot .viz-add{font-size:18px;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -118,8 +164,25 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 .stat-num{font-size:24px;font-weight:700;color:var(--green);line-height:1}
 .stat-label{font-size:10px;color:var(--muted);margin-top:2px}
 /* LEITURA */
-.book-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;padding:12px 14px}
+.book-grid{display:grid;grid-template-columns:1fr;gap:8px;padding:12px 14px}
 .book-card{border:1px solid var(--border);border-radius:6px;padding:10px}
+/* LEITURA — layout duas colunas */
+.reading-layout{display:grid;grid-template-columns:1fr 340px;gap:12px;align-items:start}
+@media(max-width:640px){.reading-layout{grid-template-columns:1fr}}
+/* Cards de tipo de leitura (Audio/Físico/Resumo) — verde */
+.reading-card{border:1.5px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:all .2s;text-align:center;user-select:none}
+.reading-card:hover{border-color:var(--green);background:var(--green-light)}
+.reading-card.done{border-color:var(--green);background:var(--green-light)}
+.reading-check{width:18px;height:18px;border:1.5px solid var(--border);border-radius:50%;margin:6px auto 0;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;color:transparent}
+.reading-card.done .reading-check{background:var(--green);border-color:var(--green);color:#fff}
+/* Tabela leitura — verde */
+.day-cell.done-green{background:var(--green);border-color:var(--green);color:#fff}
+/* Entrada anterior de leitura */
+.reading-entry{padding:10px 14px;border-top:1px solid var(--border)}
+.reading-entry-date{font-size:10px;color:var(--muted);margin-bottom:3px}
+.reading-entry-title{font-size:12px;font-weight:600;color:var(--text);margin-bottom:4px}
+.reading-entry-type{font-size:10px;color:var(--green);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px}
+.reading-entry-text{font-size:12px;line-height:1.6;color:var(--text);white-space:pre-wrap}
 .book-title{font-size:13px;font-weight:600;margin-bottom:1px}
 .book-author{font-size:11px;color:var(--muted);margin-bottom:7px}
 .book-pct{font-size:10px;color:var(--green);font-weight:600;margin-top:3px}
@@ -178,6 +241,50 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 .vs-ok{background:var(--green-light);color:var(--green)}
 .vs-pend{background:var(--amber-light);color:var(--amber)}
 .vs-alert{background:var(--red-light);color:var(--red)}
+/* NOVAS VIAGENS — sidebar vertical à esquerda */
+.viagens-layout{display:grid;grid-template-columns:220px 1fr;gap:14px;align-items:start}
+.viagens-sidebar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.viagem-side-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);padding:10px 12px 4px}
+.viagem-side-group:first-child .viagem-side-group-label{padding-top:12px}
+.viagem-side-item{padding:8px 12px;cursor:pointer;border-left:3px solid transparent;transition:all .15s}
+.viagem-side-item:hover{background:var(--gray)}
+.viagem-side-item.active{background:var(--green-light);border-left-color:var(--green)}
+.viagem-side-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.3}
+.viagem-side-item.active .viagem-side-name{color:var(--green)}
+.viagem-side-dates{font-size:10px;color:var(--muted);margin-top:2px}
+.viagem-side-item.past{opacity:.6}
+.viagem-side-empty{padding:10px 12px;font-size:11px;color:var(--muted)}
+.viagens-empty{padding:32px 20px;text-align:center;color:var(--muted);font-size:13px}
+@media(max-width:640px){.viagens-layout{grid-template-columns:1fr}}
+/* Header da viagem: dados principais */
+.viagem-hero{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:12px}
+@media(max-width:640px){.viagem-hero{grid-template-columns:1fr;padding:14px}}
+.vh-field{display:flex;flex-direction:column;gap:4px}
+.vh-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:600}
+.vh-input,.vh-select,.vh-textarea{border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;width:100%}
+.vh-textarea{min-height:60px;resize:vertical;line-height:1.4}
+.vh-input:focus,.vh-select:focus,.vh-textarea:focus{border-color:var(--green)}
+/* Status geral da viagem */
+.viagem-status-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding:10px 14px;background:var(--gray);border-radius:6px}
+.viagem-status-label{font-size:11px;color:var(--muted);font-weight:600}
+.viagem-status-badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px}
+.vsb-plan{background:var(--gray);color:var(--muted)}
+.vsb-conf{background:var(--blue-light);color:var(--blue)}
+.vsb-conc{background:var(--green-light);color:var(--green)}
+/* Checklist de itens */
+.vitem{display:grid;grid-template-columns:auto 120px 1fr;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--border)}
+.vitem:last-child{border-bottom:none}
+@media(max-width:640px){.vitem{grid-template-columns:1fr;gap:6px}}
+.vitem-name{font-size:12px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px;min-width:140px}
+.vitem-status-sel{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:11px;font-family:var(--font);background:var(--bg);cursor:pointer;font-weight:600}
+.vitem-status-sel.ok{background:var(--green-light);color:var(--green);border-color:var(--green)}
+.vitem-status-sel.parcial{background:var(--amber-light);color:var(--amber);border-color:var(--amber)}
+.vitem-status-sel.nao{background:var(--red-light);color:var(--red);border-color:var(--red)}
+.vitem-status-sel.na{background:var(--gray);color:var(--muted)}
+.vitem-obs{border:1px solid var(--border);border-radius:5px;padding:5px 8px;font-size:11px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;width:100%}
+.viagem-actions{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-top:10px}
+.viagem-actions .btn-danger{background:var(--red-light);color:var(--red);border:none;padding:6px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:var(--font)}
+.viagem-actions .btn-danger:hover{background:var(--red);color:#fff}
 /* LOADING NOTION */
 .notion-loading{display:flex;align-items:center;gap:8px;padding:20px 14px;color:var(--muted);font-size:12px}
 .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .6s linear infinite;flex-shrink:0}
@@ -317,10 +424,28 @@ function checkSenha(){
     <div class="mm-item" data-saver="silencio" onclick="toggleSaver(this)"><div class="mm-emoji">🧘</div><div class="mm-name">Silêncio</div><div class="mm-check">✓</div></div>
     <div class="mm-item" data-saver="afirmacao" onclick="toggleSaver(this)"><div class="mm-emoji">💬</div><div class="mm-name">Afirmação</div><div class="mm-check">✓</div></div>
     <div class="mm-item" data-saver="visualizacao" onclick="toggleSaver(this)"><div class="mm-emoji">🎯</div><div class="mm-name">Visualização</div><div class="mm-check">✓</div></div>
-    <div class="mm-item" data-saver="exercicio" onclick="toggleSaver(this)"><div class="mm-emoji">💪</div><div class="mm-name">Exercício</div><div class="mm-check">✓</div></div>
-    <div class="mm-item" data-saver="leitura" onclick="toggleSaver(this)"><div class="mm-emoji">📖</div><div class="mm-name">Leitura</div><div class="mm-check">✓</div></div>
-    <div class="mm-item" data-saver="escrita" onclick="toggleSaver(this)"><div class="mm-emoji">✍️</div><div class="mm-name">Escrita</div><div class="mm-check">✓</div></div>
+    <div class="mm-item" data-saver="exercicio" onclick="goToActivity()" style="cursor:pointer"><div class="mm-emoji">💪</div><div class="mm-name">Exercício</div><div class="mm-check">✓</div><div style="font-size:9px;color:var(--muted);margin-top:2px">→ atividade</div></div>
+    <div class="mm-item" data-saver="leitura" onclick="goToReading()" style="cursor:pointer"><div class="mm-emoji">📖</div><div class="mm-name">Leitura</div><div class="mm-check">✓</div><div style="font-size:9px;color:var(--muted);margin-top:2px">→ leitura</div></div>
+    <div class="mm-item" data-saver="escrita" onclick="goToDiary()" style="cursor:pointer"><div class="mm-emoji">✍️</div><div class="mm-name">Escrita</div><div class="mm-check">✓</div><div style="font-size:9px;color:var(--muted);margin-top:2px">→ diário</div></div>
   </div>
+
+  <!-- METAS DIÁRIAS -->
+  <div class="card" style="margin-bottom:12px;border:2px solid var(--amber);background:var(--amber-light)">
+    <div class="card-header" style="background:var(--amber-light);border-bottom:1px solid var(--amber)">
+      <div class="card-icon" style="background:#fff">⭐</div>
+      <span class="card-name" style="color:var(--amber)">Metas de Hoje</span>
+      <span id="goals-count" style="margin-left:auto;font-size:12px;color:var(--amber);font-weight:600"></span>
+    </div>
+    <div style="padding:10px 14px">
+      <div id="goals-list"></div>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <input type="text" id="goal-input" placeholder="Nova meta do dia (Enter para adicionar)" style="flex:1;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;font-family:var(--font);background:#fff;color:var(--text);outline:none" onkeydown="if(event.key==='Enter')addGoal()" maxlength="120">
+        <button class="save-btn" onclick="addGoal()" style="background:var(--amber);flex-shrink:0">+</button>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px">Máximo 5 metas · marque conforme cumprir</div>
+    </div>
+  </div>
+
   <div class="card" style="margin-bottom:12px"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">💬</div><span class="card-name">Afirmações 2026</span></div><div class="afirm-list" id="afirm-mm"></div></div>
   <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--purple-light)">🎯</div><span class="card-name">Visualizações</span><span style="font-size:10px;color:var(--muted);margin-left:auto">Clique para adicionar</span></div><div class="viz-grid" id="viz-mm"></div></div>
   <div class="stats-grid" style="margin-top:12px">
@@ -336,6 +461,19 @@ function checkSenha(){
     <div style="padding:10px 14px"><div class="habits-wrap"><table class="habits-table"><thead id="h-head"></thead><tbody id="h-body"></tbody></table></div>
     <div class="progress-bar"><div class="progress-fill" id="month-bar" style="width:0%"></div></div>
     <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:right" id="month-label"></div></div>
+  </div>
+
+  <!-- METAS DO MÊS -->
+  <div class="card" style="margin-top:14px;border:2px solid var(--blue);background:var(--blue-light)">
+    <div class="card-header" style="background:var(--blue-light);border-bottom:1px solid var(--blue)">
+      <div class="card-icon" style="background:#fff">🎯</div>
+      <span class="card-name" style="color:var(--blue)">Metas do Mês — <span id="month-goals-label"></span></span>
+      <span id="month-goals-count" style="margin-left:auto;font-size:12px;color:var(--blue);font-weight:600"></span>
+    </div>
+    <div style="padding:12px 14px">
+      <div class="mev-nav" id="mgoal-nav"></div>
+      <div id="month-goals-groups"></div>
+    </div>
   </div>
 </div>
 
@@ -395,28 +533,74 @@ function checkSenha(){
 <!-- LEITURA -->
 <div class="page" id="page-leitura">
   <div class="header"><div><h1>Leitura</h1><p>Meta: 1 livro por mês · 12 min diários</p></div>
-    <div style="display:flex;align-items:center;gap:8px">
-      <span class="badge" id="books-badge">0 livros</span>
-      <button class="save-btn" onclick="openModal('book')" style="font-size:10px;padding:4px 10px">+ Livro</button>
+    <span class="badge" id="reading-badge">0/3</span>
+  </div>
+
+  <!-- 3 TIPOS DE LEITURA HOJE -->
+  <div class="mm-score-row" style="padding:0 0 8px"><span class="sec" style="margin-bottom:0">Hoje</span><div class="mm-score" id="reading-score" style="color:var(--green)">0<span>/3</span></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">📚</div><span class="card-name">Prática de hoje</span></div>
+    <div class="idioma-grid">
+      <div class="reading-card" data-reading="audio" onclick="toggleReading(this)"><div class="idioma-emoji">🎧</div><div class="idioma-name">Audiobook</div><div class="idioma-desc">No trânsito, exercício</div><div class="reading-check">✓</div></div>
+      <div class="reading-card" data-reading="fisico" onclick="toggleReading(this)"><div class="idioma-emoji">📖</div><div class="idioma-name">Livro físico</div><div class="idioma-desc">Leitura profunda</div><div class="reading-check">✓</div></div>
+      <div class="reading-card" data-reading="resumo" onclick="toggleReading(this)"><div class="idioma-emoji">⚡</div><div class="idioma-name">Resumo</div><div class="idioma-desc">12 min</div><div class="reading-check">✓</div></div>
     </div>
   </div>
 
-  <!-- LENDO -->
-  <div class="card" style="margin-bottom:10px">
-    <div class="card-header"><div class="card-icon" style="background:var(--green-light)">📖</div><span class="card-name">Lendo agora</span><span class="card-count" id="cnt-lendo"></span></div>
-    <div class="book-grid" id="books-lendo"></div>
+  <!-- TABELA MENSAL -->
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Controle mensal</span></div>
+    <div style="padding:10px 14px"><div class="habits-wrap"><table class="habits-table"><thead id="rd-head"></thead><tbody id="rd-body"></tbody></table></div>
+    <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" id="rd-bar" style="background:var(--green);width:0%"></div></div></div>
   </div>
 
-  <!-- QUERO LER -->
-  <div class="card" style="margin-bottom:10px">
-    <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">🔖</div><span class="card-name">Quero ler</span><span class="card-count" id="cnt-quero"></span></div>
-    <div class="book-grid" id="books-quero"></div>
-  </div>
+  <!-- 2 COLUNAS: Registro (esq) + Biblioteca (dir) -->
+  <div class="reading-layout">
+    <!-- COLUNA ESQ — Registro de leituras -->
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--amber-light)">✍️</div>
+          <span class="card-name">Registro de leituras</span>
+        </div>
+        <div style="padding:12px 14px">
+          <select id="reading-type" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;margin-bottom:8px">
+            <option value="resumo">⚡ Resumo (12 min)</option>
+            <option value="audio">🎧 Audiobook</option>
+            <option value="fisico">📖 Livro físico</option>
+          </select>
+          <input type="text" id="reading-title" placeholder="Título do livro" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;margin-bottom:8px" maxlength="180">
+          <textarea id="reading-lesson" placeholder="Ensinamento / insight que ficou desta leitura..." style="width:100%;min-height:100px;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:12px;font-family:var(--font);background:var(--bg);color:var(--text);outline:none;resize:vertical;line-height:1.5"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+            <span style="font-size:10px;color:var(--muted)" id="reading-saved-label"></span>
+            <button class="save-btn" onclick="saveReadingEntry()">Salvar</button>
+          </div>
+        </div>
+      </div>
+      <div class="sec">Registros anteriores</div>
+      <div class="card"><div id="reading-past"></div></div>
+    </div>
 
-  <!-- CONCLUÍDOS -->
-  <div class="card">
-    <div class="card-header"><div class="card-icon" style="background:var(--amber-light)">✅</div><span class="card-name">Concluídos</span><span class="card-count" id="cnt-concluido"></span></div>
-    <div class="book-grid" id="books-concluido"></div>
+    <!-- COLUNA DIR — Biblioteca -->
+    <div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header">
+          <div class="card-icon" style="background:var(--green-light)">📚</div>
+          <span class="card-name">Biblioteca</span>
+          <button class="save-btn" onclick="openModal('book')" style="margin-left:auto;font-size:10px;padding:4px 10px">+ Livro</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header"><div class="card-icon" style="background:var(--green-light)">📖</div><span class="card-name">Lendo agora</span><span class="card-count" id="cnt-lendo"></span></div>
+        <div class="book-grid" id="books-lendo"></div>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-header"><div class="card-icon" style="background:var(--blue-light)">🔖</div><span class="card-name">Quero ler</span><span class="card-count" id="cnt-quero"></span></div>
+        <div class="book-grid" id="books-quero"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:var(--amber-light)">✅</div><span class="card-name">Concluídos</span><span class="card-count" id="cnt-concluido"></span></div>
+        <div class="book-grid" id="books-concluido"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -446,13 +630,6 @@ function checkSenha(){
     <div><h1>GTD — Pendências</h1><p id="gtd-last-sync">Atualizado pelo Hermes</p></div>
     <span class="badge" id="gtd-badge">-</span>
   </div>
-  <div class="card" style="margin-bottom:10px"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">🎯</div><span class="card-name">Prioridades do momento</span></div>
-    <div style="padding:10px 12px">
-      <div class="priority-item"><span class="priority-num">1</span><span style="font-size:12px">Inglês fluente — aulas diárias antes da Índia</span></div>
-      <div class="priority-item"><span class="priority-num">2</span><span style="font-size:12px">Ajustar Alfred e Laura — comunicação e arquivamento</span></div>
-      <div class="priority-item"><span class="priority-num">3</span><span style="font-size:12px">Retomar aeróbico 3x/semana</span></div>
-    </div>
-  </div>
   <div id="gtd-content">
     <div class="card" style="margin-bottom:10px">
       <div class="card-header"><div class="card-icon" style="background:var(--red-light)">🔴</div><span class="card-name">Urgentes</span><span class="card-count" id="cnt-urgente"></span></div>
@@ -476,11 +653,19 @@ function checkSenha(){
 <!-- VIAGENS — DADOS INJETADOS PELO HERMES/ATLAS -->
 <div class="page" id="page-viagens">
   <div class="header">
-    <div><h1>Viagens 2026</h1><p id="viagens-last-sync">Atualizado pelo Hermes</p></div>
-    <span class="badge" id="viagens-badge">-</span>
+    <div><h1>Viagens 2026</h1><p id="viagens-last-sync">Atualizado pelo Hermes e por você</p></div>
+    <div style="display:flex;align-items:center;gap:6px">
+      <span class="badge" id="viagens-badge">-</span>
+      <button class="save-btn" onclick="addViagem()" style="font-size:11px">+ Viagem</button>
+    </div>
   </div>
-  <div class="card" id="viagens-card">
-    <div style="padding:14px;font-size:12px;color:var(--muted);text-align:center">Aguardando atualização do Hermes às 4h...</div>
+
+  <div class="viagens-layout">
+    <!-- Sidebar vertical: Próximas / Sem data definida / Passadas -->
+    <div class="viagens-sidebar" id="viagens-tabs"></div>
+
+    <!-- Conteúdo da viagem selecionada -->
+    <div id="viagens-content"></div>
   </div>
 </div>
 
@@ -495,8 +680,24 @@ function checkSenha(){
   </div>
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Totais anuais</span></div><div class="year-grid" id="year-grid"></div></div>
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">SAVERS mensais</span></div><div class="chart-wrap"><canvas id="chart-savers"></canvas></div></div>
+
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Exercício físico</span></div><div class="chart-wrap"><canvas id="chart-exercicio"></canvas></div></div>
-  <div class="card"><div class="card-header"><span class="card-name">Estudos + Idiomas</span></div><div class="chart-wrap"><canvas id="chart-estudos"></canvas></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Estudos + Idiomas</span></div><div class="chart-wrap"><canvas id="chart-estudos"></canvas></div></div>
+
+  <!-- GRÁFICO DE METAS ANUAL -->
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Metas cumpridas — evolução anual</span></div><div class="chart-wrap"><canvas id="chart-metas"></canvas></div></div>
+
+  <!-- METAS MENSAIS CUMPRIDAS -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:var(--blue-light)">🎯</div>
+      <span class="card-name">Metas Mensais Cumpridas</span>
+    </div>
+    <div style="padding:12px 14px">
+      <div class="mev-nav" id="mev-nav"></div>
+      <div id="metas-evolucao"></div>
+    </div>
+  </div>
 </div>
 
 <!-- MODAL -->
@@ -1289,9 +1490,12 @@ function loadHermesData() {
     if(data.viagens) {
       const items = data.viagens.items || [];
       const updated = data.viagens.updated || '';
-      document.getElementById('viagens-last-sync').textContent = updated ? `Atualizado: ${updated}` : 'Aguardando Hermes';
-      document.getElementById('viagens-badge').textContent = items.length ? `${items.length} viagens` : '-';
-      if(items.length) renderViagensFromData(items);
+      if(!STATE.hermes_data) STATE.hermes_data = {};
+      STATE.hermes_data.viagensUpdated = updated;
+      renderViagensFromData(items);
+    } else {
+      // Ainda assim renderiza (usa STATE.viagens do Firebase)
+      renderViagensFromData([]);
     }
   } catch(e) {
     console.log('Dados do Hermes ainda não disponíveis:', e.message);
@@ -1362,28 +1566,313 @@ function renderGTDFromData(tasks) {
 }
 
 function renderViagensFromData(items) {
-  const card = document.getElementById('viagens-card');
-  if(!card) return;
-  function badge(label, val) {
-    if(!val) return '';
-    const v = (val||'').toLowerCase();
-    const cls = v.includes('ok')||v.includes('✅') ? 'vs-ok' : v.includes('urgente')||v.includes('🚨') ? 'vs-alert' : 'vs-pend';
-    return `<span class="vstatus ${cls}">${label}: ${val}</span>`;
+  // NOVA IMPLEMENTAÇÃO — abas por viagem
+  // Mescla dados do Hermes com viagens editadas pelo usuário no Firebase
+  // Usuário pode editar via app; Hermes edita via GitHub no bloco hermes-data-block
+  ensureViagensState(items);
+  renderViagensTabs();
+  renderViagemContent();
+}
+
+// Garante STATE.viagens no formato correto (mescla com dados do Hermes se necessário)
+function ensureViagensState(hermesItems) {
+  if(!STATE.viagens) STATE.viagens = [];
+  // Se STATE.viagens está vazio e o Hermes tem itens, importa a primeira vez
+  if(!STATE.viagens.length && hermesItems && hermesItems.length) {
+    hermesItems.forEach(h => STATE.viagens.push(migrateHermesViagem(h)));
+    scheduleSave();
   }
-  card.innerHTML = items.map(v=>`
-    <div class="vrow">
-      <div class="vdata">${v.periodo||v.data||''}</div>
-      <div>
-        <div class="vnome">${v.destino||'?'}</div>
-        <div class="vsub">${v.motivo||''}</div>
-        <div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px">
-          ${badge('Passagens',v.passagens)}
-          ${badge('Hotel',v.hotel)}
-          ${badge('Passeios',v.passeios)}
-        </div>
-        ${v.obs?`<div style="font-size:10px;color:var(--muted);margin-top:3px">${v.obs}</div>`:''}
+}
+
+// Extrai {inicio, fim} (YYYY-MM-DD) de um texto "YYYY-MM-DD a YYYY-MM-DD" (ou data única)
+function parsePeriodoToRange(periodo) {
+  if(!periodo) return {inicio:'', fim:''};
+  const m = String(periodo).match(/(\d{4}-\d{2}-\d{2})\s*a?\s*(\d{4}-\d{2}-\d{2})?/);
+  if(!m) return {inicio:'', fim:''};
+  return {inicio: m[1] || '', fim: m[2] || m[1] || ''};
+}
+
+// Retorna {inicio, fim} de uma viagem, migrando de 'periodo' (texto livre) se necessário
+function getViagemRange(v) {
+  if(!v.dataInicio && !v.dataFim && v.periodo) {
+    const r = parsePeriodoToRange(v.periodo);
+    v.dataInicio = r.inicio;
+    v.dataFim = r.fim;
+  }
+  return {inicio: v.dataInicio || '', fim: v.dataFim || ''};
+}
+
+// DD/MM a partir de YYYY-MM-DD
+function formatDDMM(ds) {
+  if(!ds) return '';
+  const p = ds.split('-');
+  if(p.length !== 3) return ds;
+  return `${p[2]}/${p[1]}`;
+}
+
+// Classifica a viagem: 'proxima' | 'sem_data' | 'passada'
+function classifyViagem(v) {
+  const {inicio, fim} = getViagemRange(v);
+  if(!inicio && !fim) return 'sem_data';
+  const ref = fim || inicio;
+  return ref < TODAY ? 'passada' : 'proxima';
+}
+
+// Converte formato do Hermes ({destino, periodo, motivo, passagens, hotel, passeios, obs})
+// para o formato completo com checklist
+function migrateHermesViagem(h) {
+  const now = Date.now() + Math.floor(Math.random()*1000);
+  const range = parsePeriodoToRange(h.periodo);
+  return {
+    id: 'v' + now,
+    destino: h.destino || 'Nova viagem',
+    dataInicio: range.inicio,
+    dataFim: range.fim,
+    local: h.destino || '',
+    motivo: h.motivo || '',
+    companhia: '',
+    statusGeral: 'planejando',
+    itens: {
+      hotel:       { status: parseStatus(h.hotel),     obs: '' },
+      passagens:   { status: parseStatus(h.passagens), obs: '' },
+      transporte:  { status: 'na',                     obs: '' },
+      passeios:    { status: parseStatus(h.passeios),  obs: '' },
+      seguro:      { status: 'na',                     obs: '' },
+      documentos:  { status: 'na',                     obs: '' },
+      roaming:     { status: 'na',                     obs: '' },
+      outros:      { status: 'na',                     obs: h.obs || '' },
+    }
+  };
+}
+
+function parseStatus(val) {
+  if(!val) return 'nao';
+  const v = String(val).toLowerCase();
+  if(v.includes('ok') || v.includes('✅') || v.includes('confirm')) return 'ok';
+  if(v.includes('parcial') || v.includes('pend')) return 'parcial';
+  if(v.includes('urgente') || v.includes('🚨') || v.includes('não')) return 'nao';
+  return 'nao';
+}
+
+// Definições dos itens do checklist
+const VIAGEM_ITENS = [
+  {key:'hotel',      label:'🏨 Hotel'},
+  {key:'passagens',  label:'✈️ Passagens'},
+  {key:'transporte', label:'🚕 Transporte interno'},
+  {key:'passeios',   label:'🗺️ Passeios'},
+  {key:'seguro',     label:'🛡️ Seguro viagem'},
+  {key:'documentos', label:'📄 Documentação / Visto'},
+  {key:'roaming',    label:'📶 Roaming / Internet'},
+  {key:'outros',     label:'📝 Outros'},
+];
+
+const VIAGEM_MOTIVOS = ['Trabalho', 'Passeio', 'Casal', 'Congresso', 'Família', 'Outro'];
+
+// Aba selecionada
+let CUR_VIAGEM_ID = null;
+
+function renderViagensTabs() {
+  const tabs = document.getElementById('viagens-tabs');
+  const badge = document.getElementById('viagens-badge');
+  const sync = document.getElementById('viagens-last-sync');
+  if(!tabs) return;
+  const viagens = STATE.viagens || [];
+  if(badge) badge.textContent = viagens.length ? `${viagens.length} viagens` : '-';
+
+  // Se hermes-data-block tem updated, mostra
+  if(STATE.hermes_data && STATE.hermes_data.viagensUpdated && sync) {
+    sync.textContent = `Última atualização Hermes: ${STATE.hermes_data.viagensUpdated}`;
+  }
+
+  if(!viagens.length) {
+    tabs.innerHTML = '';
+    return;
+  }
+
+  // Se nenhuma selecionada ainda ou id inválido, seleciona a primeira
+  if(!CUR_VIAGEM_ID || !viagens.find(v => v.id === CUR_VIAGEM_ID)) {
+    CUR_VIAGEM_ID = viagens[0].id;
+  }
+
+  // Agrupa: Próximas / Sem data definida / Passadas — cada grupo em ordem cronológica
+  const grupos = {proxima: [], sem_data: [], passada: []};
+  viagens.forEach(v => grupos[classifyViagem(v)].push(v));
+  const porData = (a, b) => (getViagemRange(a).inicio || '9999') < (getViagemRange(b).inicio || '9999') ? -1 : 1;
+  grupos.proxima.sort(porData);
+  grupos.sem_data.sort((a,b) => (a.destino||'').localeCompare(b.destino||''));
+  grupos.passada.sort(porData);
+
+  const GROUP_DEFS = [
+    {key:'proxima', label:'Próximas'},
+    {key:'sem_data', label:'Sem data definida'},
+    {key:'passada', label:'Passadas'},
+  ];
+
+  tabs.innerHTML = GROUP_DEFS.map(({key,label}) => {
+    const items = grupos[key];
+    if(!items.length) return '';
+    const rows = items.map(v => {
+      const isActive = v.id === CUR_VIAGEM_ID;
+      const {inicio, fim} = getViagemRange(v);
+      const datas = inicio ? `${formatDDMM(inicio)}${fim && fim!==inicio ? ' – '+formatDDMM(fim) : ''}` : '';
+      const nome = v.destino || 'Sem destino';
+      return `<div class="viagem-side-item ${isActive?'active':''} ${key==='passada'?'past':''}" onclick="selectViagem('${v.id}')">
+        <div class="viagem-side-name">${escapeHtml(nome)}</div>
+        ${datas?`<div class="viagem-side-dates">${datas}</div>`:''}
+      </div>`;
+    }).join('');
+    return `<div class="viagem-side-group"><div class="viagem-side-group-label">${label}</div>${rows}</div>`;
+  }).join('') || '<div class="viagem-side-empty">Nenhuma viagem cadastrada</div>';
+}
+
+function selectViagem(id) {
+  CUR_VIAGEM_ID = id;
+  renderViagensTabs();
+  renderViagemContent();
+}
+
+function renderViagemContent() {
+  const wrap = document.getElementById('viagens-content');
+  if(!wrap) return;
+  const viagens = STATE.viagens || [];
+  if(!viagens.length) {
+    wrap.innerHTML = '<div class="viagens-empty">Nenhuma viagem cadastrada ainda. Clique em <strong>+ Viagem</strong> para começar.</div>';
+    return;
+  }
+  const v = viagens.find(x => x.id === CUR_VIAGEM_ID);
+  if(!v) { wrap.innerHTML = ''; return; }
+
+  // Header com dados principais
+  const heroHtml = `
+    <div class="viagem-hero">
+      <div class="vh-field">
+        <label class="vh-label">Destino</label>
+        <input class="vh-input" type="text" value="${escapeHtml(v.destino||'')}" onchange="updateViagem('${v.id}','destino',this.value)" placeholder="Ex: Índia">
       </div>
-    </div>`).join('');
+      <div class="vh-field">
+        <label class="vh-label">Data início</label>
+        <input class="vh-input" type="date" value="${escapeHtml(getViagemRange(v).inicio||'')}" onchange="updateViagem('${v.id}','dataInicio',this.value)">
+      </div>
+      <div class="vh-field">
+        <label class="vh-label">Data fim</label>
+        <input class="vh-input" type="date" value="${escapeHtml(getViagemRange(v).fim||'')}" onchange="updateViagem('${v.id}','dataFim',this.value)">
+      </div>
+      <div class="vh-field">
+        <label class="vh-label">Local (cidade/país)</label>
+        <input class="vh-input" type="text" value="${escapeHtml(v.local||'')}" onchange="updateViagem('${v.id}','local',this.value)" placeholder="Ex: Delhi, Índia">
+      </div>
+      <div class="vh-field">
+        <label class="vh-label">Motivo</label>
+        <select class="vh-select" onchange="updateViagem('${v.id}','motivo',this.value)">
+          <option value="">— selecione —</option>
+          ${VIAGEM_MOTIVOS.map(m => `<option value="${m}" ${v.motivo===m?'selected':''}>${m}</option>`).join('')}
+        </select>
+      </div>
+      <div class="vh-field" style="grid-column:1/-1">
+        <label class="vh-label">Companhia (quem vai junto)</label>
+        <input class="vh-input" type="text" value="${escapeHtml(v.companhia||'')}" onchange="updateViagem('${v.id}','companhia',this.value)" placeholder="Ex: Lara e crianças">
+      </div>
+    </div>`;
+
+  // Status geral
+  const statusHtml = `
+    <div class="viagem-status-row">
+      <span class="viagem-status-label">Status geral:</span>
+      <select onchange="updateViagem('${v.id}','statusGeral',this.value)" class="vitem-status-sel ${v.statusGeral==='planejando'?'parcial':v.statusGeral==='confirmada'?'ok':v.statusGeral==='concluida'?'na':''}">
+        <option value="planejando" ${v.statusGeral==='planejando'?'selected':''}>📝 Planejando</option>
+        <option value="confirmada" ${v.statusGeral==='confirmada'?'selected':''}>✅ Confirmada</option>
+        <option value="concluida"  ${v.statusGeral==='concluida'?'selected':''}>🏁 Concluída</option>
+      </select>
+    </div>`;
+
+  // Checklist
+  if(!v.itens) v.itens = {};
+  const checklistHtml = VIAGEM_ITENS.map(({key,label}) => {
+    const it = v.itens[key] || {status:'na', obs:''};
+    if(!v.itens[key]) v.itens[key] = it;
+    const statusClass = it.status === 'ok' ? 'ok' : it.status === 'parcial' ? 'parcial' : it.status === 'nao' ? 'nao' : 'na';
+    return `
+      <div class="vitem">
+        <div class="vitem-name">${label}</div>
+        <select class="vitem-status-sel ${statusClass}" onchange="updateViagemItem('${v.id}','${key}','status',this.value)">
+          <option value="na"      ${it.status==='na'?'selected':''}>— não aplica</option>
+          <option value="nao"     ${it.status==='nao'?'selected':''}>❌ Não visto</option>
+          <option value="parcial" ${it.status==='parcial'?'selected':''}>🟡 Parcial</option>
+          <option value="ok"      ${it.status==='ok'?'selected':''}>✅ OK</option>
+        </select>
+        <input class="vitem-obs" type="text" value="${escapeHtml(it.obs||'')}" placeholder="Observações..." onchange="updateViagemItem('${v.id}','${key}','obs',this.value)">
+      </div>`;
+  }).join('');
+
+  wrap.innerHTML = `
+    ${heroHtml}
+    ${statusHtml}
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:var(--blue-light)">📋</div>
+        <span class="card-name">Checklist</span>
+      </div>
+      <div>${checklistHtml}</div>
+      <div class="viagem-actions">
+        <span style="font-size:10px;color:var(--muted)">Editado por você e pelo Hermes</span>
+        <button class="btn-danger" onclick="deleteViagem('${v.id}')">🗑️ Excluir viagem</button>
+      </div>
+    </div>`;
+}
+
+function updateViagem(id, field, value) {
+  const v = (STATE.viagens || []).find(x => x.id === id);
+  if(!v) return;
+  v[field] = value;
+  // Se mudou destino, datas ou status geral, re-agrupa/reordena a sidebar
+  if(field === 'destino' || field === 'dataInicio' || field === 'dataFim' || field === 'statusGeral') renderViagensTabs();
+  scheduleSave();
+}
+
+function updateViagemItem(id, itemKey, subField, value) {
+  const v = (STATE.viagens || []).find(x => x.id === id);
+  if(!v) return;
+  if(!v.itens) v.itens = {};
+  if(!v.itens[itemKey]) v.itens[itemKey] = {status:'na', obs:''};
+  v.itens[itemKey][subField] = value;
+  // Se mudou status, re-renderiza pra atualizar cor
+  if(subField === 'status') renderViagemContent();
+  scheduleSave();
+}
+
+function addViagem() {
+  if(!STATE.viagens) STATE.viagens = [];
+  const nv = {
+    id: 'v' + Date.now(),
+    destino: 'Nova viagem',
+    dataInicio: '',
+    dataFim: '',
+    local: '',
+    motivo: '',
+    companhia: '',
+    statusGeral: 'planejando',
+    itens: {}
+  };
+  VIAGEM_ITENS.forEach(({key}) => nv.itens[key] = {status:'na', obs:''});
+  STATE.viagens.push(nv);
+  CUR_VIAGEM_ID = nv.id;
+  renderViagensTabs();
+  renderViagemContent();
+  scheduleSave();
+}
+
+function deleteViagem(id) {
+  if(!confirm('Tem certeza que quer excluir esta viagem? Essa ação não pode ser desfeita.')) return;
+  STATE.viagens = (STATE.viagens || []).filter(x => x.id !== id);
+  // Se apagou a atual, seleciona a primeira restante
+  if(STATE.viagens.length) {
+    CUR_VIAGEM_ID = STATE.viagens[0].id;
+  } else {
+    CUR_VIAGEM_ID = null;
+  }
+  renderViagensTabs();
+  renderViagemContent();
+  scheduleSave();
 }
 
 // ===== STORAGE + STATE =====
@@ -1428,7 +1917,10 @@ async function syncFromFirebase() {
       // Re-renderiza com dados do Firebase
       renderAfirmacoes();
       renderViz('viz-mm');renderViz('viz-diary');
-      initMM();initDiary();initIdiomas();initLeitura();initAF();initEstudos();
+      initMM();initDiary();initIdiomas();initLeitura();initReading();initAF();initEstudos();
+      renderGoals();
+      renderMgoalNav();
+      renderMonthGoals();
       loadHermesData();
     }
   } catch(e) {
@@ -1457,12 +1949,36 @@ function scheduleSave() { clearTimeout(syncTimer); syncTimer = setTimeout(saveTo
 
 
 // ===== NAV =====
+function goToActivity(){
+  // Navega para aba Atividade
+  const tabs = document.querySelectorAll('.nav-tab');
+  let afTab = null;
+  tabs.forEach(t => { if(t.textContent.includes('Atividade')) afTab = t; });
+  showPage('af', afTab);
+}
+
+function goToDiary(){
+  // Navega para aba Diário
+  const tabs = document.querySelectorAll('.nav-tab');
+  let dTab = null;
+  tabs.forEach(t => { if(t.textContent.includes('Diário')) dTab = t; });
+  showPage('diario', dTab);
+}
+
+function goToReading(){
+  // Navega para aba Leitura
+  const tabs = document.querySelectorAll('.nav-tab');
+  let lTab = null;
+  tabs.forEach(t => { if(t.textContent.includes('Leitura')) lTab = t; });
+  showPage('leitura', lTab);
+}
+
 function showPage(id, el) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el) el.classList.add('active');
-  if(id === 'evolucao') buildEvolution();
+  if(id === 'evolucao') { buildEvolution(); renderMevNav(); renderMetasEvolucao(); }
 }
 
 // ===== DEFAULTS =====
@@ -1531,6 +2047,25 @@ function getDefaultState() {
       {id:'st6',title:'Planejamento financeiro pessoal',area:'financas',status:'todo'},
     ],
     viz_images: [null,null,null,null,null,null],
+    viagens: [{
+      id: 'v_exemplo',
+      destino: 'Nova viagem',
+      periodo: '',
+      local: '',
+      motivo: '',
+      companhia: '',
+      statusGeral: 'planejando',
+      itens: {
+        hotel:       { status: 'na', obs: '' },
+        passagens:   { status: 'na', obs: '' },
+        transporte:  { status: 'na', obs: '' },
+        passeios:    { status: 'na', obs: '' },
+        seguro:      { status: 'na', obs: '' },
+        documentos:  { status: 'na', obs: '' },
+        roaming:     { status: 'na', obs: '' },
+        outros:      { status: 'na', obs: '' },
+      }
+    }],
   };
 }
 
@@ -1618,7 +2153,21 @@ function toggleSaver(el){
 }
 function updMMScore(n){document.getElementById('mm-score').innerHTML=`${n}<span>/6</span>`;document.getElementById('mm-badge').textContent=`${n}/6`;}
 function buildTable(){buildTableForMonth(VIEW_YEAR,VIEW_MONTH);}
-function toggleDay(key,ds,el){if(el.classList.contains('future'))return;const cur=getHabitForDate(key,ds);setHabit(key,ds,!cur);el.classList.toggle('done',!cur);buildTableForMonth(VIEW_YEAR,VIEW_MONTH);updStatsForMonth(VIEW_YEAR,VIEW_MONTH);scheduleSave();}
+function toggleDay(key,ds,el){
+  if(el.classList.contains('future'))return;
+  const cur=getHabitForDate(key,ds);
+  setHabit(key,ds,!cur);
+  el.classList.toggle('done',!cur);
+  buildTableForMonth(VIEW_YEAR,VIEW_MONTH);
+  updStatsForMonth(VIEW_YEAR,VIEW_MONTH);
+  // Sincroniza card do topo se a célula for de HOJE
+  if(ds===TODAY){
+    const card=document.querySelector(`.mm-item[data-saver="${key}"]`);
+    if(card){card.classList.toggle('done',!cur);}
+    updMMScore(document.querySelectorAll('.mm-item.done').length);
+  }
+  scheduleSave();
+}
 function updStats(){updStatsForMonth(VIEW_YEAR,VIEW_MONTH);}
 
 // ===== DIÁRIO =====
@@ -1664,9 +2213,30 @@ function loadDiaryForDate(dateStr){
 
 function saveDiary(){
   if(!STATE.diary)STATE.diary={};
-  STATE.diary[DIARY_EDIT_DATE]=document.getElementById('diary-today').value;
+  const texto = document.getElementById('diary-today').value;
+  const ds = DIARY_EDIT_DATE;
+  STATE.diary[ds] = texto;
+
+  // Marca/desmarca escrita na tabela mensal conforme conteúdo
+  const temConteudo = texto.trim().length > 0;
+  setHabit('escrita', ds, temConteudo ? 1 : 0);
+
+  // Se for HOJE, sincroniza card SAVER e placar do topo
+  if(ds === TODAY){
+    const card = document.querySelector('.mm-item[data-saver="escrita"]');
+    if(card) card.classList.toggle('done', temConteudo);
+    updMMScore(document.querySelectorAll('.mm-item.done').length);
+  }
+
+  // Se o mês visualizado for o do dia editado, redesenha tabela
+  const [y, m] = ds.split('-').map(Number);
+  if(y === VIEW_YEAR && (m-1) === VIEW_MONTH){
+    buildTableForMonth(VIEW_YEAR, VIEW_MONTH);
+    updStatsForMonth(VIEW_YEAR, VIEW_MONTH);
+  }
+
   saveToCloud();
-  document.getElementById('diary-saved-label').textContent='Salvo ✓';
+  document.getElementById('diary-saved-label').textContent = 'Salvo ✓';
   loadDiaryEntries();
 }
 function loadDiaryEntries(){
@@ -1685,7 +2255,18 @@ function initIdiomas(){
   document.querySelectorAll('.idioma-card').forEach(el=>{if(td[el.dataset.idioma]){el.classList.add('done');cnt++;}else el.classList.remove('done');});
   updIdiomaScore(cnt);buildIdiomaTable();updIdiomaStats();
 }
-function toggleIdioma(el){const k=el.dataset.idioma;if(!STATE.idiomas)STATE.idiomas={};if(!STATE.idiomas[TODAY])STATE.idiomas[TODAY]={};const cur=STATE.idiomas[TODAY][k];if(cur)delete STATE.idiomas[TODAY][k];else STATE.idiomas[TODAY][k]=1;el.classList.toggle('done',!cur);updIdiomaScore(document.querySelectorAll('.idioma-card.done').length);buildIdiomaTable();updIdiomaStats();scheduleSave();}
+function toggleIdioma(el){
+  const k=el.dataset.idioma;
+  if(!STATE.idiomas)STATE.idiomas={};
+  if(!STATE.idiomas[TODAY])STATE.idiomas[TODAY]={};
+  const cur=STATE.idiomas[TODAY][k];
+  if(cur)delete STATE.idiomas[TODAY][k]; else STATE.idiomas[TODAY][k]=1;
+  el.classList.toggle('done',!cur);
+  updIdiomaScore(document.querySelectorAll('.idioma-card.done').length);
+  buildIdiomaTable();updIdiomaStats();
+  syncIdiomasToMM(TODAY);
+  scheduleSave();
+}
 function updIdiomaScore(n){document.getElementById('idioma-score').innerHTML=`${n}<span>/3</span>`;document.getElementById('idioma-badge').textContent=`${n}/3`;}
 function buildIdiomaTable(){
   let head=`<tr><th class="hn">Prática</th>`;
@@ -1708,13 +2289,228 @@ function buildIdiomaTable(){
   document.getElementById('id-body').innerHTML=body;
   document.getElementById('id-bar').style.width=(gP>0?Math.round(gT/gP*100):0)+'%';
 }
-function toggleIdDay(key,ds,el){if(el.classList.contains('future'))return;if(!STATE.idiomas)STATE.idiomas={};if(!STATE.idiomas[ds])STATE.idiomas[ds]={};const cur=STATE.idiomas[ds][key];if(cur)delete STATE.idiomas[ds][key];else STATE.idiomas[ds][key]=1;el.classList.toggle('done-blue',!cur);buildIdiomaTable();updIdiomaStats();scheduleSave();}
+function toggleIdDay(key,ds,el){
+  if(el.classList.contains('future'))return;
+  if(!STATE.idiomas)STATE.idiomas={};
+  if(!STATE.idiomas[ds])STATE.idiomas[ds]={};
+  const cur=STATE.idiomas[ds][key];
+  if(cur)delete STATE.idiomas[ds][key]; else STATE.idiomas[ds][key]=1;
+  el.classList.toggle('done-blue',!cur);
+  // Se for hoje, sincroniza card do topo e placar
+  if(ds===TODAY){
+    const card = document.querySelector(`.idioma-card[data-idioma="${key}"]`);
+    if(card) card.classList.toggle('done',!cur);
+    updIdiomaScore(document.querySelectorAll('.idioma-card.done').length);
+  }
+  buildIdiomaTable();updIdiomaStats();
+  syncIdiomasToMM(ds);
+  scheduleSave();
+}
+
+// ===== SINCRONIZAÇÃO IDIOMAS -> MM =====
+// Se pelo menos 1 dos 3 idiomas estiver marcado nesse dia,
+// marca o hábito 'idiomas' na tabela mensal do MM. Senão, desmarca.
+function syncIdiomasToMM(ds){
+  const d = (STATE.idiomas && STATE.idiomas[ds]) || {};
+  const algum = d.poli || d.duolingo || d.conversacao;
+  setHabit('idiomas', ds, algum ? 1 : 0);
+  // Se o mês visualizado no MM contiver esse dia, redesenha
+  const [y,m] = ds.split('-').map(Number);
+  if(y === VIEW_YEAR && (m-1) === VIEW_MONTH){
+    buildTableForMonth(VIEW_YEAR, VIEW_MONTH);
+    updStatsForMonth(VIEW_YEAR, VIEW_MONTH);
+  }
+}
 function updIdiomaStats(){['poli','duolingo','conversacao'].forEach(k=>{let t=0;for(let d=1;d<=CUR_DAY;d++){const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;t+=getIdioma(k,ds);}const el=document.getElementById('ist-'+k);if(el)el.textContent=t;});let dias=0;for(let d=1;d<=CUR_DAY;d++){const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;if(getIdioma('poli',ds)+getIdioma('duolingo',ds)+getIdioma('conversacao',ds)>0)dias++;}const el=document.getElementById('ist-total');if(el)el.textContent=dias;}
 
 // ===== LEITURA =====
+// ===== LEITURA — 3 tipos diários =====
+function getReading(key, ds){
+  return (STATE.reading && STATE.reading[ds] && STATE.reading[ds][key]) ? 1 : 0;
+}
+
+function setReading(key, ds, val){
+  if(!STATE.reading) STATE.reading = {};
+  if(!STATE.reading[ds]) STATE.reading[ds] = {};
+  if(val) STATE.reading[ds][key] = 1;
+  else delete STATE.reading[ds][key];
+  if(Object.keys(STATE.reading[ds]).length === 0) delete STATE.reading[ds];
+}
+
+function initReading(){
+  const td = (STATE.reading && STATE.reading[TODAY]) || {};
+  let cnt = 0;
+  document.querySelectorAll('.reading-card').forEach(el => {
+    if(td[el.dataset.reading]){ el.classList.add('done'); cnt++; }
+    else el.classList.remove('done');
+  });
+  updReadingScore(cnt);
+  buildReadingTable();
+  loadReadingPast();
+}
+
+function toggleReading(el){
+  const k = el.dataset.reading;
+  if(!STATE.reading) STATE.reading = {};
+  if(!STATE.reading[TODAY]) STATE.reading[TODAY] = {};
+  const cur = STATE.reading[TODAY][k];
+  if(cur) delete STATE.reading[TODAY][k]; else STATE.reading[TODAY][k] = 1;
+  if(Object.keys(STATE.reading[TODAY]).length === 0) delete STATE.reading[TODAY];
+  el.classList.toggle('done', !cur);
+  updReadingScore(document.querySelectorAll('.reading-card.done').length);
+  buildReadingTable();
+  syncReadingToMM(TODAY);
+  scheduleSave();
+}
+
+function updReadingScore(n){
+  const s = document.getElementById('reading-score');
+  const b = document.getElementById('reading-badge');
+  if(s) s.innerHTML = `${n}<span>/3</span>`;
+  if(b) b.textContent = `${n}/3`;
+}
+
+function buildReadingTable(){
+  let head = `<tr><th class="hn">Tipo</th>`;
+  for(let d = 1; d <= DAYS_IN_MONTH; d++){
+    const isT = d === CUR_DAY;
+    head += `<th style="${isT?'color:var(--green);font-weight:700':''}">${d}</th>`;
+  }
+  head += '<th>T</th></tr>';
+  const headEl = document.getElementById('rd-head');
+  if(headEl) headEl.innerHTML = head;
+
+  const rows = [
+    {key:'audio',  label:'🎧 Audiobook'},
+    {key:'fisico', label:'📖 Livro físico'},
+    {key:'resumo', label:'⚡ Resumo'},
+  ];
+  let body = ''; let gT = 0, gP = 0;
+  rows.forEach(({key, label}) => {
+    body += `<tr><td class="habit-label">${label}</td>`;
+    let tot = 0;
+    for(let d = 1; d <= DAYS_IN_MONTH; d++){
+      const fut = d > CUR_DAY;
+      const isT = d === CUR_DAY;
+      const ds = `${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const done = fut ? 0 : getReading(key, ds);
+      if(done && !fut) tot++;
+      const cls = fut ? 'future' : (done ? 'done-green' : '') + (isT ? ' today' : '');
+      body += `<td><div class="day-cell ${cls}" onclick="toggleReadingDay('${key}','${ds}',this)">✓</div></td>`;
+    }
+    gT += tot; gP += CUR_DAY;
+    body += `<td class="habit-total" style="color:var(--green)">${tot}</td></tr>`;
+  });
+  const bodyEl = document.getElementById('rd-body');
+  if(bodyEl) bodyEl.innerHTML = body;
+  const bar = document.getElementById('rd-bar');
+  if(bar) bar.style.width = (gP > 0 ? Math.round(gT/gP*100) : 0) + '%';
+}
+
+function toggleReadingDay(key, ds, el){
+  if(el.classList.contains('future')) return;
+  const cur = getReading(key, ds);
+  setReading(key, ds, !cur);
+  el.classList.toggle('done-green', !cur);
+  // Sincroniza card do topo se for hoje
+  if(ds === TODAY){
+    const card = document.querySelector(`.reading-card[data-reading="${key}"]`);
+    if(card) card.classList.toggle('done', !cur);
+    updReadingScore(document.querySelectorAll('.reading-card.done').length);
+  }
+  buildReadingTable();
+  syncReadingToMM(ds);
+  scheduleSave();
+}
+
+// Se pelo menos 1 dos 3 tipos estiver marcado, marca 'leitura' no MM
+function syncReadingToMM(ds){
+  const d = (STATE.reading && STATE.reading[ds]) || {};
+  const algum = d.audio || d.fisico || d.resumo;
+  setHabit('leitura', ds, algum ? 1 : 0);
+  // Se o mês visualizado no MM contiver esse dia, redesenha
+  const [y, m] = ds.split('-').map(Number);
+  if(y === VIEW_YEAR && (m-1) === VIEW_MONTH){
+    buildTableForMonth(VIEW_YEAR, VIEW_MONTH);
+    updStatsForMonth(VIEW_YEAR, VIEW_MONTH);
+  }
+}
+
+// ===== REGISTRO DE LEITURAS =====
+function saveReadingEntry(){
+  const type  = document.getElementById('reading-type').value;
+  const title = document.getElementById('reading-title').value.trim();
+  const lesson= document.getElementById('reading-lesson').value.trim();
+  if(!title && !lesson){
+    alert('Escreva um título ou ensinamento antes de salvar.');
+    return;
+  }
+  if(!STATE.readingEntries) STATE.readingEntries = [];
+  STATE.readingEntries.push({
+    id: 're' + Date.now(),
+    date: TODAY,
+    type: type,
+    title: title,
+    lesson: lesson,
+  });
+
+  // Marca automaticamente esse tipo no dia de hoje
+  setReading(type, TODAY, 1);
+
+  // Sincroniza card do topo
+  const card = document.querySelector(`.reading-card[data-reading="${type}"]`);
+  if(card) card.classList.add('done');
+  updReadingScore(document.querySelectorAll('.reading-card.done').length);
+
+  // Redesenha tabela mensal de leitura + sincroniza com MM
+  buildReadingTable();
+  syncReadingToMM(TODAY);
+
+  // Limpa formulário
+  document.getElementById('reading-title').value = '';
+  document.getElementById('reading-lesson').value = '';
+  document.getElementById('reading-saved-label').textContent = 'Salvo ✓';
+  setTimeout(() => {
+    const el = document.getElementById('reading-saved-label');
+    if(el) el.textContent = '';
+  }, 2500);
+  loadReadingPast();
+  scheduleSave();
+}
+
+function deleteReadingEntry(id){
+  if(!STATE.readingEntries) return;
+  if(!confirm('Apagar este registro?')) return;
+  STATE.readingEntries = STATE.readingEntries.filter(e => e.id !== id);
+  loadReadingPast();
+  scheduleSave();
+}
+
+function loadReadingPast(){
+  const el = document.getElementById('reading-past');
+  if(!el) return;
+  const entries = (STATE.readingEntries || []).slice().sort((a,b) => (b.date + b.id).localeCompare(a.date + a.id));
+  if(!entries.length){
+    el.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--muted);text-align:center">Nenhum registro ainda.</div>';
+    return;
+  }
+  const typeMap = {audio:'🎧 Audiobook', fisico:'📖 Livro físico', resumo:'⚡ Resumo'};
+  el.innerHTML = entries.map(e => {
+    const [y, m, d] = e.date.split('-');
+    return `<div class="reading-entry">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px">
+        <div class="reading-entry-type">${typeMap[e.type] || e.type}</div>
+        <div class="reading-entry-date">${parseInt(d)} de ${MONTH_SHORT[parseInt(m)-1]} de ${y}</div>
+      </div>
+      ${e.title ? `<div class="reading-entry-title">${escapeHtml(e.title)}</div>` : ''}
+      ${e.lesson ? `<div class="reading-entry-text">${escapeHtml(e.lesson)}</div>` : ''}
+      <button onclick="deleteReadingEntry('${e.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:11px;margin-top:6px;padding:0" title="Apagar">Apagar</button>
+    </div>`;
+  }).join('');
+}
+
 function initLeitura(){
   const books=STATE.books||[];
-  document.getElementById('books-badge').textContent=books.length+' livros';
   const CATS=[{st:'lendo',id:'books-lendo',cnt:'cnt-lendo',cor:'var(--green)',label:'Lendo'},
               {st:'quero',id:'books-quero',cnt:'cnt-quero',cor:'var(--blue)',label:'Quero ler'},
               {st:'concluido',id:'books-concluido',cnt:'cnt-concluido',cor:'var(--amber)',label:'Concluido'}];
@@ -1758,7 +2554,26 @@ function initAF(){
   document.getElementById('af-bar').style.width=Math.min(Math.round((musc+aerob)/(CUR_DAY*2)*100),100)+'%';
   document.getElementById('af-label').textContent=`Musculação: ${musc} · Aeróbico: ${aerob} dias`;
 }
-function cycleAF(ds,el){if(el.classList.contains('future'))return;if(!STATE.af)STATE.af={};const tipos=['','musc','aerob','ambos'];const cur=STATE.af[ds]||'';const next=tipos[(tipos.indexOf(cur)+1)%tipos.length];if(next)STATE.af[ds]=next;else delete STATE.af[ds];scheduleSave();initAF();}
+function cycleAF(ds,el){
+  if(el.classList.contains('future'))return;
+  if(!STATE.af)STATE.af={};
+  const tipos=['','musc','aerob','ambos'];
+  const cur=STATE.af[ds]||'';
+  const next=tipos[(tipos.indexOf(cur)+1)%tipos.length];
+  if(next)STATE.af[ds]=next;else delete STATE.af[ds];
+  // Sincroniza com o hábito Exercício da MM
+  setHabit('exercicio',ds,next?1:0);
+  // Se for hoje, marca o card no topo e a tabela
+  if(ds===TODAY){
+    const card=document.querySelector('.mm-item[data-saver="exercicio"]');
+    if(card)card.classList.toggle('done',!!next);
+    updMMScore(document.querySelectorAll('.mm-item.done').length);
+  }
+  buildTableForMonth(VIEW_YEAR,VIEW_MONTH);
+  updStatsForMonth(VIEW_YEAR,VIEW_MONTH);
+  scheduleSave();
+  initAF();
+}
 
 // ===== ESTUDOS =====
 const ATAGS={hemo:'🫀 Hemodinâmica',cardio:'❤️ Cardiologia',ingles:'🗣️ Inglês',financas:'💰 Finanças'};
@@ -1783,8 +2598,11 @@ function cycleStudy(id){if(!STATE.studies)return;const s=STATE.studies.find(x=>x
 function deleteStudy(id){if(!STATE.studies)return;STATE.studies=STATE.studies.filter(x=>x.id!==id);scheduleSave();initEstudos();}
 
 // ===== EVOLUÇÃO =====
-let chartsBuilt=false;
-function buildEvolution(){buildHeatmap();buildYearStats();if(!chartsBuilt){chartsBuilt=true;buildCharts();}}
+let chartInstances = {};
+function buildEvolution(){buildHeatmap();buildYearStats();buildCharts();}
+function destroyChart(id){
+  if(chartInstances[id]){ try{ chartInstances[id].destroy(); }catch(e){} delete chartInstances[id]; }
+}
 function buildHeatmap(){
   const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   let html='';
@@ -1825,14 +2643,84 @@ function getMonthlyData(key){const mkeys=['jan','fev','mar','abr','mai'];const r
 function buildCharts(){
   const months=['Jan','Fev','Mar','Abr','Mai','Jun'];
   const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10},boxWidth:12}}},scales:{y:{max:31,ticks:{font:{size:9}}},x:{ticks:{font:{size:10}}}}};
-  new Chart(document.getElementById('chart-savers').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Silêncio',data:getMonthlyData('silencio'),backgroundColor:'#2D6A4F'},{label:'Afirmação',data:getMonthlyData('afirmacao'),backgroundColor:'#52B788'},{label:'Exercício',data:getMonthlyData('exercicio'),backgroundColor:'#1D4ED8'},{label:'Leitura',data:getMonthlyData('leitura'),backgroundColor:'#6D28D9'}]},options:opts});
-  new Chart(document.getElementById('chart-exercicio').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Musculação',data:[16,1,15,10,16,getMonthTotal('exercicio',CUR_YEAR,CUR_MONTH)],borderColor:'#1D4ED8',backgroundColor:'rgba(29,78,216,.1)',tension:.3,fill:true},{label:'Aeróbico',data:[9,0,14,6,15,4],borderColor:'#52B788',backgroundColor:'rgba(82,183,136,.1)',tension:.3,fill:true}]},options:opts});
-  new Chart(document.getElementById('chart-estudos').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Hemodinâmica',data:getMonthlyData('hemodinamica'),borderColor:'#6D28D9',backgroundColor:'rgba(109,40,217,.1)',tension:.3,fill:true},{label:'Cardiologia',data:getMonthlyData('cardiologia'),borderColor:'#B91C1C',backgroundColor:'rgba(185,28,28,.1)',tension:.3,fill:true},{label:'Idiomas',data:getMonthlyData('idiomas'),borderColor:'#B45309',backgroundColor:'rgba(180,83,9,.1)',tension:.3,fill:true}]},options:opts});
+  destroyChart('savers');
+  chartInstances.savers = new Chart(document.getElementById('chart-savers').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Silêncio',data:getMonthlyData('silencio'),backgroundColor:'#2D6A4F'},{label:'Afirmação',data:getMonthlyData('afirmacao'),backgroundColor:'#52B788'},{label:'Exercício',data:getMonthlyData('exercicio'),backgroundColor:'#1D4ED8'},{label:'Leitura',data:getMonthlyData('leitura'),backgroundColor:'#6D28D9'}]},options:opts});
+  destroyChart('exercicio');
+  chartInstances.exercicio = new Chart(document.getElementById('chart-exercicio').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Musculação',data:[16,1,15,10,16,getMonthTotal('exercicio',CUR_YEAR,CUR_MONTH)],borderColor:'#1D4ED8',backgroundColor:'rgba(29,78,216,.1)',tension:.3,fill:true},{label:'Aeróbico',data:[9,0,14,6,15,4],borderColor:'#52B788',backgroundColor:'rgba(82,183,136,.1)',tension:.3,fill:true}]},options:opts});
+  destroyChart('estudos');
+  chartInstances.estudos = new Chart(document.getElementById('chart-estudos').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Hemodinâmica',data:getMonthlyData('hemodinamica'),borderColor:'#6D28D9',backgroundColor:'rgba(109,40,217,.1)',tension:.3,fill:true},{label:'Cardiologia',data:getMonthlyData('cardiologia'),borderColor:'#B91C1C',backgroundColor:'rgba(185,28,28,.1)',tension:.3,fill:true},{label:'Idiomas',data:getMonthlyData('idiomas'),borderColor:'#B45309',backgroundColor:'rgba(180,83,9,.1)',tension:.3,fill:true}]},options:opts});
+
+  // Gráfico de metas cumpridas (% por grupo + total)
+  const metasOpts = {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{labels:{font:{size:10},boxWidth:12}}, tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y+'%'}}},
+    scales:{y:{min:0, max:100, ticks:{font:{size:9}, callback:v=>v+'%'}}, x:{ticks:{font:{size:10}}}}
+  };
+  const metasData = getMetasMonthlyData();
+  destroyChart('metas');
+  chartInstances.metas = new Chart(document.getElementById('chart-metas').getContext('2d'), {
+    type:'line',
+    data:{
+      labels:['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+      datasets:[
+        {label:'💼 Trabalho', data:metasData.trabalho, borderColor:'#1D4ED8', backgroundColor:'rgba(29,78,216,.08)', tension:.3, fill:false, spanGaps:true},
+        {label:'🎓 Estudos',  data:metasData.estudos,  borderColor:'#6D28D9', backgroundColor:'rgba(109,40,217,.08)', tension:.3, fill:false, spanGaps:true},
+        {label:'💰 Pessoal',  data:metasData.pessoal,  borderColor:'#B45309', backgroundColor:'rgba(180,83,9,.08)',   tension:.3, fill:false, spanGaps:true},
+        {label:'📊 Total',    data:metasData.total,    borderColor:'#2D6A4F', backgroundColor:'rgba(45,106,79,.15)',  tension:.3, fill:true,  borderWidth:2.5, spanGaps:true},
+      ]
+    },
+    options:metasOpts
+  });
+}
+
+// Retorna % cumprido por grupo em cada mês do ano (12 posições)
+function getMetasMonthlyData(){
+  const monthGoalsAll = STATE.monthGoals || {};
+  const result = {trabalho:[], estudos:[], pessoal:[], total:[]};
+  for(let m=0; m<12; m++){
+    const mk = `${CUR_YEAR}-${String(m+1).padStart(2,'0')}`;
+    const g = monthGoalsAll[mk];
+    if(!g){
+      // Sem dados: null para não desenhar ponto
+      result.trabalho.push(null); result.estudos.push(null);
+      result.pessoal.push(null);  result.total.push(null);
+      continue;
+    }
+    let totalDone=0, totalAll=0;
+    ['trabalho','estudos','pessoal'].forEach(k=>{
+      const arr = g[k] || [];
+      const done = arr.filter(x=>x.done).length;
+      const pct = arr.length ? Math.round(done/arr.length*100) : null;
+      result[k].push(pct);
+      totalDone += done; totalAll += arr.length;
+    });
+    result.total.push(totalAll ? Math.round(totalDone/totalAll*100) : null);
+  }
+  return result;
 }
 
 // ===== MODAL =====
 let mType='';
-function openModal(type){mType=type;const body=document.getElementById('modal-body');if(type==='book'){document.getElementById('modal-title').textContent='Adicionar livro';body.innerHTML=`<input id="mi-title" placeholder="Título"><input id="mi-author" placeholder="Autor"><input id="mi-pct" type="number" min="0" max="100" value="0" placeholder="% lido">`;}else if(type==='study'){document.getElementById('modal-title').textContent='Novo tema de estudo';body.innerHTML=`<input id="mi-st" placeholder="Tema de estudo"><select id="mi-sa"><option value="hemo">🫀 Hemodinâmica</option><option value="cardio">❤️ Cardiologia</option><option value="ingles">🗣️ Inglês</option><option value="financas">💰 Finanças</option></select>`;}document.getElementById('modal-overlay').classList.add('open');}
+function openModal(type){
+  mType=type;
+  const body=document.getElementById('modal-body');
+  if(type==='book'){
+    document.getElementById('modal-title').textContent='Adicionar livro';
+    body.innerHTML=`
+      <input id="mi-title" placeholder="Título">
+      <input id="mi-author" placeholder="Autor">
+      <select id="mi-bstatus">
+        <option value="lendo">📖 Lendo agora</option>
+        <option value="quero">🔖 Quero ler</option>
+        <option value="concluido">✅ Concluído</option>
+      </select>
+      <input id="mi-pct" type="number" min="0" max="100" value="0" placeholder="% lido (opcional)">`;
+  } else if(type==='study'){
+    document.getElementById('modal-title').textContent='Novo tema de estudo';
+    body.innerHTML=`<input id="mi-st" placeholder="Tema de estudo"><select id="mi-sa"><option value="hemo">🫀 Hemodinâmica</option><option value="cardio">❤️ Cardiologia</option><option value="ingles">🗣️ Inglês</option><option value="financas">💰 Finanças</option></select>`;
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+}
 function saveModal(){if(mType==='book'){if(!STATE.books)STATE.books=[];const bst=document.getElementById('mi-bstatus');STATE.books.push({id:'b'+Date.now(),title:document.getElementById('mi-title').value||'Sem título',author:document.getElementById('mi-author').value||'',pct:parseInt(document.getElementById('mi-pct').value)||0,status:bst?bst.value:'lendo'});scheduleSave();initLeitura();}else if(mType==='study'){if(!STATE.studies)STATE.studies=[];STATE.studies.push({id:'st'+Date.now(),title:document.getElementById('mi-st').value||'Sem título',area:document.getElementById('mi-sa').value,status:'todo'});scheduleSave();initEstudos();}document.getElementById('modal-overlay').classList.remove('open');}
 
 // ===== INIT =====
@@ -1896,11 +2784,293 @@ function exportDiaryToHermes(){
   });
 }
 
+// ===== METAS DO MÊS =====
+const MGOAL_GROUPS = [
+  {key:'trabalho', label:'Trabalho', desc:'Consultório e hemodinâmica', emoji:'💼'},
+  {key:'estudos',  label:'Estudos',  desc:'Mestrado e estudos',          emoji:'🎓'},
+  {key:'pessoal',  label:'Pessoal',  desc:'Finanças e pessoal',          emoji:'💰'},
+];
+
+// Mês visualizado no bloco Metas do Mês (independente da nav da tabela)
+let MGOAL_MONTH = CUR_MONTH;
+let MGOAL_YEAR = CUR_YEAR;
+
+function currentMonthKey(){
+  return `${MGOAL_YEAR}-${String(MGOAL_MONTH+1).padStart(2,'0')}`;
+}
+
+function renderMgoalNav(){
+  const nav = document.getElementById('mgoal-nav');
+  if(!nav) return;
+  const mShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  nav.innerHTML = mShort.map((m,i)=>{
+    const isFuture = i > CUR_MONTH && MGOAL_YEAR >= CUR_YEAR;
+    const isActive = (i === MGOAL_MONTH && MGOAL_YEAR === CUR_YEAR);
+    return `<button class="mev-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setMgoalMonth(${i})">${m}</button>`;
+  }).join('');
+}
+
+function setMgoalMonth(m){
+  MGOAL_MONTH = m;
+  renderMgoalNav();
+  renderMonthGoals();
+}
+
+function getMonthGoals(monthKey){
+  if(!STATE.monthGoals) STATE.monthGoals = {};
+  if(!STATE.monthGoals[monthKey]) STATE.monthGoals[monthKey] = {trabalho:[], estudos:[], pessoal:[]};
+  const mg = STATE.monthGoals[monthKey];
+  if(!mg.trabalho) mg.trabalho = [];
+  if(!mg.estudos)  mg.estudos  = [];
+  if(!mg.pessoal)  mg.pessoal  = [];
+  return mg;
+}
+
+function checkMonthRollover(){
+  // Executa uma vez ao abrir o app: se houve virada de mês, oferece carregar pendentes
+  if(!STATE.monthGoals) return;
+  const monthKey = `${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}`;
+  const lastPrompted = STATE.lastRolloverPrompt || '';
+  if(lastPrompted === monthKey) return; // já perguntou este mês
+  // Encontra mês anterior com metas
+  const prevDate = new Date(CUR_YEAR, CUR_MONTH-1, 1);
+  const prevKey = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}`;
+  const prev = STATE.monthGoals[prevKey];
+  if(!prev) return;
+  // Verifica se há pendentes
+  const pending = [];
+  MGOAL_GROUPS.forEach(({key,label})=>{
+    const arr = prev[key] || [];
+    arr.forEach(g => { if(!g.done) pending.push({group:key, groupLabel:label, text:g.text}); });
+  });
+  if(!pending.length){
+    STATE.lastRolloverPrompt = monthKey;
+    scheduleSave();
+    return;
+  }
+  const summary = pending.map(p => `• [${p.groupLabel}] ${p.text}`).join('\n');
+  const yes = confirm(`Mês novo! Você tem ${pending.length} meta(s) do mês anterior não cumprida(s):\n\n${summary}\n\nDeseja carregá-las para este mês?`);
+  if(yes){
+    const cur = getMonthGoals(monthKey);
+    pending.forEach(p => cur[p.group].push({text:p.text, done:false}));
+  }
+  STATE.lastRolloverPrompt = monthKey;
+  scheduleSave();
+}
+
+function renderMonthGoals(){
+  const monthKey = currentMonthKey();
+  const goals = getMonthGoals(monthKey);
+  const label = document.getElementById('month-goals-label');
+  const count = document.getElementById('month-goals-count');
+  const wrap = document.getElementById('month-goals-groups');
+  if(!wrap) return;
+  if(label) label.textContent = `${MONTH_NAMES[MGOAL_MONTH]} ${MGOAL_YEAR}`;
+  let totalDone=0, totalAll=0;
+  wrap.innerHTML = MGOAL_GROUPS.map(({key,label,desc,emoji})=>{
+    const arr = goals[key] || [];
+    const done = arr.filter(g=>g.done).length;
+    totalDone += done; totalAll += arr.length;
+    const pct = arr.length ? Math.round(done/arr.length*100) : 0;
+    return `
+      <div class="mgoal-group">
+        <div class="mgoal-header">
+          <div><span class="mgoal-title">${emoji} ${label}</span><span class="mgoal-desc">${desc}</span></div>
+          <div class="mgoal-progress-txt">${done}/${arr.length}${arr.length?` · ${pct}%`:''}</div>
+        </div>
+        <div class="mgoal-bar"><div class="mgoal-bar-fill" style="width:${pct}%"></div></div>
+        ${arr.map((g,i)=>`
+          <div class="mgoal-item">
+            <div class="mgoal-check ${g.done?'done':''}" onclick="toggleMonthGoal('${key}',${i})">✓</div>
+            <div class="mgoal-text ${g.done?'done':''}">${escapeHtml(g.text)}</div>
+            <button class="goal-del" onclick="deleteMonthGoal('${key}',${i})" title="Remover">✕</button>
+          </div>`).join('')}
+        <div class="mgoal-add-row">
+          <input type="text" id="mgoal-input-${key}" placeholder="Nova meta de ${label.toLowerCase()}" maxlength="140" onkeydown="if(event.key==='Enter')addMonthGoal('${key}')">
+          <button onclick="addMonthGoal('${key}')">+</button>
+        </div>
+      </div>`;
+  }).join('');
+  if(count) count.textContent = totalAll ? `${totalDone}/${totalAll} cumpridas` : '';
+}
+
+function addMonthGoal(groupKey){
+  const inp = document.getElementById('mgoal-input-'+groupKey);
+  if(!inp) return;
+  const text = inp.value.trim();
+  if(!text) return;
+  const goals = getMonthGoals(currentMonthKey());
+  goals[groupKey].push({text, done:false});
+  inp.value = '';
+  renderMonthGoals();
+  scheduleSave();
+  // devolve foco no mesmo campo depois do re-render
+  setTimeout(()=>{ const n=document.getElementById('mgoal-input-'+groupKey); if(n) n.focus(); }, 30);
+}
+
+function toggleMonthGoal(groupKey, i){
+  const goals = getMonthGoals(currentMonthKey());
+  const arr = goals[groupKey];
+  if(!arr || !arr[i]) return;
+  arr[i].done = !arr[i].done;
+  renderMonthGoals();
+  scheduleSave();
+}
+
+function deleteMonthGoal(groupKey, i){
+  const goals = getMonthGoals(currentMonthKey());
+  goals[groupKey].splice(i,1);
+  renderMonthGoals();
+  scheduleSave();
+}
+
+// Guarda qual mês está sendo visualizado na Evolução
+let MEV_MONTH = CUR_MONTH;
+let MEV_YEAR = CUR_YEAR;
+
+function renderMevNav(){
+  const nav = document.getElementById('mev-nav');
+  if(!nav) return;
+  const mShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  nav.innerHTML = mShort.map((m,i)=>{
+    const isFuture = i > CUR_MONTH && MEV_YEAR >= CUR_YEAR;
+    const isActive = (i === MEV_MONTH && MEV_YEAR === CUR_YEAR);
+    return `<button class="mev-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setMevMonth(${i})">${m}</button>`;
+  }).join('');
+}
+
+function setMevMonth(m){
+  MEV_MONTH = m;
+  renderMevNav();
+  renderMetasEvolucao();
+}
+
+function renderMetasEvolucao(){
+  const wrap = document.getElementById('metas-evolucao');
+  if(!wrap) return;
+  const monthKey = `${MEV_YEAR}-${String(MEV_MONTH+1).padStart(2,'0')}`;
+  const goals = (STATE.monthGoals || {})[monthKey] || {};
+  const groups = MGOAL_GROUPS.map(({key,label,emoji,desc})=>{
+    const arr = goals[key] || [];
+    return {key,label,emoji,desc,arr};
+  });
+  const hasAny = groups.some(g=>g.arr.length);
+  if(!hasAny){
+    wrap.innerHTML = `
+      <div class="mev-month">
+        <div class="mev-month-title">${MONTH_NAMES[MEV_MONTH]} ${MEV_YEAR}</div>
+        <div class="mev-empty">Nenhuma meta registrada neste mês.</div>
+      </div>`;
+    return;
+  }
+  const rows = groups.map(({key,label,emoji,arr})=>{
+    const done = arr.filter(g=>g.done).length;
+    const pct = arr.length ? Math.round(done/arr.length*100) : 0;
+    const empty = !arr.length;
+    const items = arr.map((g,i)=>`
+      <div class="mev-item">
+        <div class="mev-item-check ${g.done?'done':''}" onclick="toggleMevGoal('${monthKey}','${key}',${i})">✓</div>
+        <div class="mev-item-text ${g.done?'done':''}">${escapeHtml(g.text)}</div>
+      </div>`).join('');
+    return `
+      <div class="mev-row">
+        <div class="mev-label">
+          <span class="mev-label-name">${emoji} ${label}</span>
+          <span class="mev-label-val">${empty?'—':`${done}/${arr.length} · ${pct}%`}</span>
+        </div>
+        <div class="mev-track"><div class="mev-fill" style="width:${empty?0:pct}%;${empty?'background:var(--gray)':''}"></div></div>
+        ${arr.length ? `<div class="mev-items">${items}</div>` : ''}
+      </div>`;
+  }).join('');
+  wrap.innerHTML = `
+    <div class="mev-month">
+      <div class="mev-month-title">${MONTH_NAMES[MEV_MONTH]} ${MEV_YEAR}</div>
+      ${rows}
+    </div>`;
+}
+
+function toggleMevGoal(monthKey, groupKey, i){
+  if(!STATE.monthGoals || !STATE.monthGoals[monthKey]) return;
+  const arr = STATE.monthGoals[monthKey][groupKey];
+  if(!arr || !arr[i]) return;
+  arr[i].done = !arr[i].done;
+  renderMetasEvolucao();
+  // Se estiver editando o mesmo mês que está aberto na aba MM, atualiza lá também
+  if(monthKey === `${MGOAL_YEAR}-${String(MGOAL_MONTH+1).padStart(2,'0')}`){
+    renderMonthGoals();
+  }
+  scheduleSave();
+}
+
+// ===== METAS DIÁRIAS =====
+function getTodayGoals(){
+  if(!STATE.goals) STATE.goals = {};
+  if(!STATE.goals[TODAY]) STATE.goals[TODAY] = [];
+  return STATE.goals[TODAY];
+}
+
+function renderGoals(){
+  const goals = getTodayGoals();
+  const list = document.getElementById('goals-list');
+  const cnt = document.getElementById('goals-count');
+  if(!list) return;
+  const done = goals.filter(g=>g.done).length;
+  cnt.textContent = goals.length ? `${done}/${goals.length} cumpridas` : '';
+  if(!goals.length){
+    list.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--muted);text-align:center;font-style:italic">Adicione até 5 metas para o dia de hoje.</div>';
+    return;
+  }
+  list.innerHTML = goals.map((g,i)=>`
+    <div class="goal-item">
+      <div class="goal-check ${g.done?'done':''}" onclick="toggleGoal(${i})">✓</div>
+      <div class="goal-text ${g.done?'done':''}">${escapeHtml(g.text)}</div>
+      <button class="goal-del" onclick="deleteGoal(${i})" title="Remover">✕</button>
+    </div>`).join('');
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function addGoal(){
+  const input = document.getElementById('goal-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const goals = getTodayGoals();
+  if(goals.length >= 5){
+    alert('Máximo 5 metas por dia. Remova alguma antes de adicionar outra.');
+    return;
+  }
+  goals.push({text, done:false});
+  input.value = '';
+  renderGoals();
+  scheduleSave();
+}
+
+function toggleGoal(i){
+  const goals = getTodayGoals();
+  if(!goals[i]) return;
+  goals[i].done = !goals[i].done;
+  renderGoals();
+  scheduleSave();
+}
+
+function deleteGoal(i){
+  const goals = getTodayGoals();
+  goals.splice(i,1);
+  renderGoals();
+  scheduleSave();
+}
+
 function init(){
   loadFromCloud(); // síncrono — carrega local e dispara Firebase em bg
   renderAfirmacoes();
   renderViz('viz-mm');renderViz('viz-diary');
-  initMM();initDiary();initIdiomas();initLeitura();initAF();initEstudos();
+  initMM();initDiary();initIdiomas();initLeitura();initReading();initAF();initEstudos();
+  renderGoals();
+  renderMgoalNav();
+  renderMonthGoals();
+  checkMonthRollover();
   loadHermesData();
 }
 init();

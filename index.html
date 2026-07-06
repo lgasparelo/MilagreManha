@@ -2359,6 +2359,15 @@ function syncReadingToMM(ds){
   const d = (STATE.reading && STATE.reading[ds]) || {};
   const algum = d.audio || d.fisico || d.resumo;
   setHabit('leitura', ds, algum ? 1 : 0);
+
+  // Se for HOJE, sincroniza também o card SAVERS do topo.
+  // Isso vale tanto para marcar quanto para desmarcar o último tipo de leitura.
+  if(ds === TODAY){
+    const card = document.querySelector('.mm-item[data-saver="leitura"]');
+    if(card) card.classList.toggle('done', !!algum);
+    updMMScore(document.querySelectorAll('.mm-item.done').length);
+  }
+
   // Se o mês visualizado no MM contiver esse dia, redesenha
   const [y, m] = ds.split('-').map(Number);
   if(y === VIEW_YEAR && (m-1) === VIEW_MONTH){

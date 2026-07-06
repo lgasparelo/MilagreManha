@@ -2464,7 +2464,16 @@ function initLeitura(){
 }
 function setBookStatus(id,status){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b){b.status=status;scheduleSave();initLeitura();}}
 function deleteBook(id){if(!STATE.books)return;STATE.books=STATE.books.filter(x=>x.id!==id);scheduleSave();initLeitura();}
-function updBook(id,pct){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b)b.pct=parseInt(pct);const e1=document.getElementById('bp-'+id);const e2=document.getElementById('bpf-'+id);if(e1)e1.textContent=pct+'%';if(e2)e2.style.width=pct+'%';scheduleSave();}
+function markReadingProgressToday(){
+  // Atualizar a evolução de um livro também conta como leitura do dia no SAVERS.
+  setReading('fisico', TODAY, 1);
+  const card=document.querySelector('.reading-card[data-reading="fisico"]');
+  if(card)card.classList.add('done');
+  updReadingScore(document.querySelectorAll('.reading-card.done').length);
+  buildReadingTable();
+  syncReadingToMM(TODAY);
+}
+function updBook(id,pct){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b)b.pct=parseInt(pct);const e1=document.getElementById('bp-'+id);const e2=document.getElementById('bpf-'+id);if(e1)e1.textContent=pct+'%';if(e2)e2.style.width=pct+'%';markReadingProgressToday();scheduleSave();}
 
 // ===== AF =====
 function initAF(){

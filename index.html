@@ -69,6 +69,17 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 .goal-text.done{text-decoration:line-through;color:var(--muted)}
 .goal-del{background:none;border:none;cursor:pointer;font-size:14px;color:var(--muted);padding:2px 6px;flex-shrink:0}
 .goal-del:hover{color:var(--red)}
+.yesterday-goals{margin-top:12px;padding-top:10px;border-top:1px dashed rgba(180,83,9,.35)}
+.yesterday-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--amber);font-weight:700;margin-bottom:6px}
+.yesterday-title span{font-size:10px;color:var(--muted);font-weight:500}
+.yesterday-empty{font-size:11px;color:var(--muted);font-style:italic;padding:4px 2px}
+.yesterday-item{display:flex;align-items:center;gap:8px;padding:6px 8px;background:rgba(255,255,255,.72);border:1px solid rgba(180,83,9,.22);border-radius:5px;margin-bottom:4px}
+.yesterday-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;font-size:10px;font-weight:700;background:#fff}
+.yesterday-check.done{background:var(--amber);color:#fff}
+.yesterday-text{flex:1;font-size:11px;line-height:1.35;color:var(--text)}
+.yesterday-text.done{text-decoration:line-through;color:var(--muted)}
+.copy-goal-btn{border:1px solid rgba(180,83,9,.35);background:#fff;color:var(--amber);border-radius:5px;font-size:10px;font-weight:600;padding:3px 7px;cursor:pointer;font-family:var(--font);white-space:nowrap}
+.copy-goal-btn:hover{background:var(--amber);color:#fff}
 /* METAS DO MÊS */
 .mgoal-group{margin-bottom:14px}
 .mgoal-group:last-child{margin-bottom:0}
@@ -87,7 +98,11 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 .mgoal-add-row input{flex:1;border:1px solid var(--border);border-radius:5px;padding:6px 8px;font-size:12px;font-family:var(--font);background:#fff;color:var(--text);outline:none}
 .mgoal-add-row button{background:var(--blue);color:#fff;border:none;padding:6px 10px;border-radius:5px;font-size:12px;cursor:pointer;font-family:var(--font);font-weight:600}
 /* EVOLUÇÃO — barras metas mensais */
-.mev-nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.mev-nav,.year-nav{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.year-nav{margin-bottom:8px}
+.year-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;font-family:var(--font)}
+.year-btn:hover{border-color:var(--green);color:var(--green)}
+.year-btn.active{background:var(--green);border-color:var(--green);color:#fff}
 .mev-btn{flex-shrink:0;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--muted);transition:all .15s;font-family:var(--font)}
 .mev-btn:hover{border-color:var(--blue);color:var(--blue)}
 .mev-btn.active{background:var(--blue);border-color:var(--blue);color:#fff}
@@ -438,6 +453,7 @@ function checkSenha(){
     </div>
     <div style="padding:10px 14px">
       <div id="goals-list"></div>
+      <div class="yesterday-goals" id="yesterday-goals"></div>
       <div style="display:flex;gap:6px;margin-top:8px">
         <input type="text" id="goal-input" placeholder="Nova meta do dia (Enter para adicionar)" style="flex:1;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:13px;font-family:var(--font);background:#fff;color:var(--text);outline:none" onkeydown="if(event.key==='Enter')addGoal()" maxlength="120">
         <button class="save-btn" onclick="addGoal()" style="background:var(--amber);flex-shrink:0">+</button>
@@ -687,6 +703,18 @@ function checkSenha(){
   <!-- GRÁFICO DE METAS ANUAL -->
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Metas cumpridas — evolução anual</span></div><div class="chart-wrap"><canvas id="chart-metas"></canvas></div></div>
 
+  <!-- CONTROLE MENSAL CONECTADO AO MM -->
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-header"><span class="card-name" id="ev-control-title">Controle mensal</span><span class="card-count" id="ev-control-pct"></span></div>
+    <div style="padding:12px 14px">
+      <div class="year-nav" id="ev-year-nav"></div>
+      <div class="mev-nav" id="ev-control-month-nav"></div>
+      <div class="habits-wrap"><table class="habits-table"><thead id="ev-head"></thead><tbody id="ev-body"></tbody></table></div>
+      <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" id="ev-control-bar" style="width:0%"></div></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:right" id="ev-control-label"></div>
+    </div>
+  </div>
+
   <!-- METAS MENSAIS CUMPRIDAS -->
   <div class="card">
     <div class="card-header">
@@ -694,6 +722,7 @@ function checkSenha(){
       <span class="card-name">Metas Mensais Cumpridas</span>
     </div>
     <div style="padding:12px 14px">
+      <div class="year-nav" id="mev-year-nav"></div>
       <div class="mev-nav" id="mev-nav"></div>
       <div id="metas-evolucao"></div>
     </div>
@@ -1198,7 +1227,14 @@ const CUR_DAY = NOW.getDate();
 const MONTH_NAMES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const MONTH_SHORT = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
 const DAYS_IN_MONTH = new Date(CUR_YEAR, CUR_MONTH+1, 0).getDate();
+const BASE_YEAR = 2026;
 function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+function dateKey(year, month, day){return `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;}
+function addDays(ds, delta){const d=new Date(ds+'T12:00:00');d.setDate(d.getDate()+delta);return d.toISOString().slice(0,10);}
+function formatDate(ds){const [y,m,d]=ds.split('-').map(Number);return `${d} de ${MONTH_SHORT[m-1]} de ${y}`;}
+function isFutureDatePart(year, month, day=1){return year>CUR_YEAR || (year===CUR_YEAR && (month>CUR_MONTH || (month===CUR_MONTH && day>CUR_DAY)));}
+function availableYears(){const end=Math.max(CUR_YEAR+2,2028);const years=[];for(let y=BASE_YEAR;y<=end;y++)years.push(y);return years;}
+function renderYearNav(id, activeYear, setter){const nav=document.getElementById(id);if(!nav)return;nav.innerHTML=availableYears().map(y=>`<button class="year-btn ${y===activeYear?'active':''}" onclick="${setter}(${y})">${y}</button>`).join('');}
 
 // ===== NAVEGAÇÃO DE MESES =====
 let VIEW_YEAR = CUR_YEAR;
@@ -1850,6 +1886,7 @@ async function syncFromFirebase() {
       renderViz('viz-mm');renderViz('viz-diary');
       initMM();initDiary();initIdiomas();initLeitura();initReading();initAF();initEstudos();
       renderGoals();
+      if(document.getElementById('page-evolucao')?.classList.contains('active')) { buildEvolution(); renderEvolutionControlYearNav(); renderEvolutionControlMonthNav(); buildEvolutionControlTable(); renderMevYearNav(); renderMevNav(); renderMetasEvolucao(); }
       renderMgoalNav();
       renderMonthGoals();
       loadHermesData();
@@ -1909,7 +1946,7 @@ function showPage(id, el) {
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
   if(el) el.classList.add('active');
-  if(id === 'evolucao') { buildEvolution(); renderMevNav(); renderMetasEvolucao(); }
+  if(id === 'evolucao') { buildEvolution(); renderEvolutionControlYearNav(); renderEvolutionControlMonthNav(); buildEvolutionControlTable(); renderMevYearNav(); renderMevNav(); renderMetasEvolucao(); }
 }
 
 // ===== DEFAULTS =====
@@ -2753,14 +2790,18 @@ function renderMgoalNav(){
   if(!nav) return;
   const mShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   nav.innerHTML = mShort.map((m,i)=>{
-    const isFuture = i > CUR_MONTH && MGOAL_YEAR >= CUR_YEAR;
-    const isActive = (i === MGOAL_MONTH && MGOAL_YEAR === CUR_YEAR);
-    return `<button class="mev-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setMgoalMonth(${i})">${m}</button>`;
+    const isActive = (i === MGOAL_MONTH);
+    return `<button class="mev-btn ${isActive?'active':''}" onclick="setMgoalMonth(${i})">${m}</button>`;
   }).join('');
 }
 
 function setMgoalMonth(m){
   MGOAL_MONTH = m;
+  renderMgoalNav();
+  renderMonthGoals();
+}
+function setMgoalYear(y){
+  MGOAL_YEAR = y;
   renderMgoalNav();
   renderMonthGoals();
 }
@@ -2873,18 +2914,120 @@ function deleteMonthGoal(groupKey, i){
   scheduleSave();
 }
 
+// Guarda qual mês/ano está sendo visualizado no Controle Mensal da Evolução
+let EV_CONTROL_MONTH = CUR_MONTH;
+let EV_CONTROL_YEAR = CUR_YEAR;
+
+function renderEvolutionControlYearNav(){
+  renderYearNav('ev-year-nav', EV_CONTROL_YEAR, 'setEvolutionControlYear');
+}
+
+function setEvolutionControlYear(y){
+  EV_CONTROL_YEAR = y;
+  renderEvolutionControlYearNav();
+  renderEvolutionControlMonthNav();
+  buildEvolutionControlTable();
+}
+
+function renderEvolutionControlMonthNav(){
+  const nav = document.getElementById('ev-control-month-nav');
+  if(!nav) return;
+  const mShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  nav.innerHTML = mShort.map((m,i)=>{
+    const isActive = i === EV_CONTROL_MONTH;
+    const isFuture = isFutureDatePart(EV_CONTROL_YEAR, i, 1);
+    return `<button class="mev-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setEvolutionControlMonth(${i})">${m}</button>`;
+  }).join('');
+}
+
+function setEvolutionControlMonth(m){
+  EV_CONTROL_MONTH = m;
+  renderEvolutionControlMonthNav();
+  buildEvolutionControlTable();
+}
+
+function buildEvolutionControlTable(){
+  const headEl = document.getElementById('ev-head');
+  const bodyEl = document.getElementById('ev-body');
+  if(!headEl || !bodyEl) return;
+  const year = EV_CONTROL_YEAR;
+  const month = EV_CONTROL_MONTH;
+  const days = daysInMonth(year, month);
+  const isCurrentMonth = (year === CUR_YEAR && month === CUR_MONTH);
+  const isPastMonth = year < CUR_YEAR || (year === CUR_YEAR && month < CUR_MONTH);
+  const maxDay = isCurrentMonth ? CUR_DAY : (isPastMonth ? days : 0);
+  const title = document.getElementById('ev-control-title');
+  if(title) title.textContent = `Controle — ${MONTH_NAMES[month]} ${year}`;
+  let head = `<tr><th class="hn">Hábito</th>`;
+  for(let d=1; d<=days; d++){
+    const isT = isCurrentMonth && d === CUR_DAY;
+    head += `<th style="${isT?'color:var(--green);font-weight:700':''}">${d}</th>`;
+  }
+  head += '<th>T</th></tr>';
+  headEl.innerHTML = head;
+  let body = ''; let gT=0, gP=0;
+  SAVERS_DEF.forEach(({key,label})=>{
+    body += `<tr><td class="habit-label">${label}</td>`;
+    let tot = 0;
+    for(let d=1; d<=days; d++){
+      const fut = isFutureDatePart(year, month, d);
+      const isT = isCurrentMonth && d === CUR_DAY;
+      const ds = dateKey(year, month, d);
+      const done = fut ? 0 : getHabitForDate(key, ds);
+      if(done && !fut) tot++;
+      const cls = fut ? 'future' : (done ? 'done' : '') + (isT ? ' today' : '');
+      body += `<td><div class="day-cell ${cls}" onclick="toggleEvolutionControlDay('${key}','${ds}',this)">✓</div></td>`;
+    }
+    gT += tot; gP += maxDay;
+    body += `<td class="habit-total">${tot}</td></tr>`;
+  });
+  bodyEl.innerHTML = body;
+  const pct = gP > 0 ? Math.round(gT/gP*100) : 0;
+  const bar = document.getElementById('ev-control-bar'); if(bar) bar.style.width = pct+'%';
+  const lbl = document.getElementById('ev-control-label'); if(lbl) lbl.textContent = maxDay ? `${gT} de ${gP} possíveis (${pct}%)` : 'Mês futuro — aguardando registros';
+  const pctEl = document.getElementById('ev-control-pct'); if(pctEl) pctEl.textContent = maxDay ? pct+'%' : '';
+}
+
+function toggleEvolutionControlDay(key, ds, el){
+  if(el.classList.contains('future')) return;
+  const cur = getHabitForDate(key, ds);
+  setHabit(key, ds, !cur);
+  buildEvolutionControlTable();
+  const [y,m] = ds.split('-').map(Number);
+  if(y === VIEW_YEAR && (m-1) === VIEW_MONTH){
+    buildTableForMonth(VIEW_YEAR, VIEW_MONTH);
+    updStatsForMonth(VIEW_YEAR, VIEW_MONTH);
+  }
+  if(ds === TODAY){
+    const card=document.querySelector(`.mm-item[data-saver="${key}"]`);
+    if(card) card.classList.toggle('done', !cur);
+    updMMScore(document.querySelectorAll('.mm-item.done').length);
+  }
+  scheduleSave();
+}
+
 // Guarda qual mês está sendo visualizado na Evolução
 let MEV_MONTH = CUR_MONTH;
 let MEV_YEAR = CUR_YEAR;
+
+function renderMevYearNav(){
+  renderYearNav('mev-year-nav', MEV_YEAR, 'setMevYear');
+}
+
+function setMevYear(y){
+  MEV_YEAR = y;
+  renderMevYearNav();
+  renderMevNav();
+  renderMetasEvolucao();
+}
 
 function renderMevNav(){
   const nav = document.getElementById('mev-nav');
   if(!nav) return;
   const mShort = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
   nav.innerHTML = mShort.map((m,i)=>{
-    const isFuture = i > CUR_MONTH && MEV_YEAR >= CUR_YEAR;
-    const isActive = (i === MEV_MONTH && MEV_YEAR === CUR_YEAR);
-    return `<button class="mev-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setMevMonth(${i})">${m}</button>`;
+    const isActive = (i === MEV_MONTH);
+    return `<button class="mev-btn ${isActive?'active':''}" onclick="setMevMonth(${i})">${m}</button>`;
   }).join('');
 }
 
@@ -2952,11 +3095,13 @@ function toggleMevGoal(monthKey, groupKey, i){
 }
 
 // ===== METAS DIÁRIAS =====
-function getTodayGoals(){
+function getGoalsForDate(ds, create=false){
   if(!STATE.goals) STATE.goals = {};
-  if(!STATE.goals[TODAY]) STATE.goals[TODAY] = [];
-  return STATE.goals[TODAY];
+  if(create && !STATE.goals[ds]) STATE.goals[ds] = [];
+  return STATE.goals[ds] || [];
 }
+function getTodayGoals(){ return getGoalsForDate(TODAY, true); }
+function getYesterdayKey(){ return addDays(TODAY, -1); }
 
 function renderGoals(){
   const goals = getTodayGoals();
@@ -2967,14 +3112,36 @@ function renderGoals(){
   cnt.textContent = goals.length ? `${done}/${goals.length} cumpridas` : '';
   if(!goals.length){
     list.innerHTML = '<div style="padding:8px;font-size:12px;color:var(--muted);text-align:center;font-style:italic">Adicione até 5 metas para o dia de hoje.</div>';
+  } else {
+    list.innerHTML = goals.map((g,i)=>`
+      <div class="goal-item">
+        <div class="goal-check ${g.done?'done':''}" onclick="toggleGoal(${i})">✓</div>
+        <div class="goal-text ${g.done?'done':''}">${escapeHtml(g.text)}</div>
+        <button class="goal-del" onclick="deleteGoal(${i})" title="Remover">✕</button>
+      </div>`).join('');
+  }
+  renderYesterdayGoals();
+}
+
+function renderYesterdayGoals(){
+  const wrap = document.getElementById('yesterday-goals');
+  if(!wrap) return;
+  const yKey = getYesterdayKey();
+  const goals = getGoalsForDate(yKey, false);
+  if(!goals.length){
+    wrap.innerHTML = `<div class="yesterday-title">Metas de ontem <span>${formatDate(yKey)}</span></div><div class="yesterday-empty">Nenhuma meta registrada ontem.</div>`;
     return;
   }
-  list.innerHTML = goals.map((g,i)=>`
-    <div class="goal-item">
-      <div class="goal-check ${g.done?'done':''}" onclick="toggleGoal(${i})">✓</div>
-      <div class="goal-text ${g.done?'done':''}">${escapeHtml(g.text)}</div>
-      <button class="goal-del" onclick="deleteGoal(${i})" title="Remover">✕</button>
-    </div>`).join('');
+  const pending = goals.filter(g=>!g.done).length;
+  wrap.innerHTML = `
+    <div class="yesterday-title">Metas de ontem <span>${formatDate(yKey)} · ${pending} pendente(s)</span></div>
+    ${goals.map((g,i)=>`
+      <div class="yesterday-item">
+        <div class="yesterday-check ${g.done?'done':''}">✓</div>
+        <div class="yesterday-text ${g.done?'done':''}">${escapeHtml(g.text)}</div>
+        ${g.done?'':`<button class="copy-goal-btn" onclick="copyYesterdayGoal(${i})">copiar</button>`}
+      </div>`).join('')}
+    ${pending>1?`<button class="copy-goal-btn" style="margin-top:4px" onclick="copyPendingYesterdayGoals()">copiar pendentes</button>`:''}`;
 }
 
 function escapeHtml(s){
@@ -2985,15 +3152,24 @@ function addGoal(){
   const input = document.getElementById('goal-input');
   const text = input.value.trim();
   if(!text) return;
+  addGoalText(text);
+  input.value = '';
+}
+
+function addGoalText(text){
   const goals = getTodayGoals();
   if(goals.length >= 5){
     alert('Máximo 5 metas por dia. Remova alguma antes de adicionar outra.');
-    return;
+    return false;
   }
-  goals.push({text, done:false});
-  input.value = '';
+  if(goals.some(g => (g.text||'').trim().toLowerCase() === text.trim().toLowerCase())){
+    alert('Essa meta já está na lista de hoje.');
+    return false;
+  }
+  goals.push({text:text.trim(), done:false});
   renderGoals();
   scheduleSave();
+  return true;
 }
 
 function toggleGoal(i){
@@ -3009,6 +3185,19 @@ function deleteGoal(i){
   goals.splice(i,1);
   renderGoals();
   scheduleSave();
+}
+
+function copyYesterdayGoal(i){
+  const goals = getGoalsForDate(getYesterdayKey(), false);
+  if(!goals[i] || goals[i].done) return;
+  addGoalText(goals[i].text || '');
+}
+
+function copyPendingYesterdayGoals(){
+  const goals = getGoalsForDate(getYesterdayKey(), false).filter(g=>!g.done);
+  let copied = 0;
+  goals.forEach(g => { if(addGoalText(g.text || '')) copied++; });
+  if(!copied && goals.length) alert('As pendências de ontem já estão na lista de hoje ou o limite de 5 metas foi atingido.');
 }
 
 function init(){

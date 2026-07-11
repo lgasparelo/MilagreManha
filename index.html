@@ -624,9 +624,17 @@ function checkSenha(){
 <div class="page" id="page-af">
   <div class="header"><div><h1>Atividade Física</h1><p>Meta: musculação 3x + aeróbico 3x / semana</p></div><span class="badge" id="af-badge"></span></div>
   <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">💪</div><span class="card-name" id="af-month-title">Mês atual</span><span style="font-size:10px;color:var(--muted);margin-left:auto">toque: musc → aeróbico → ambos</span></div>
+    <div style="padding:12px 14px 0">
+      <div class="year-nav" id="af-year-nav"></div>
+      <div class="mev-nav" id="af-month-nav"></div>
+    </div>
     <div class="af-grid" id="af-grid"></div>
     <div class="af-legend"><span><div class="af-dot" style="background:#E8F5EE;border:1px solid var(--green)"></div>Musculação</span><span><div class="af-dot" style="background:#EFF6FF;border:1px solid var(--blue)"></div>Aeróbico</span><span><div class="af-dot" style="background:#FEF3C7;border:1px solid var(--amber)"></div>Ambos</span></div>
     <div style="padding:0 14px 12px"><div class="progress-bar"><div class="progress-fill" id="af-bar" style="width:0%"></div></div><div style="font-size:10px;color:var(--muted);margin-top:4px" id="af-label"></div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><div class="card-header"><div class="card-icon" style="background:var(--blue-light)">📈</div><span class="card-name" id="af-year-title">Acompanhamento anual</span></div>
+    <div class="year-grid" id="af-year-grid"></div>
+    <div style="padding:0 14px 12px"><div class="habits-wrap"><table class="habits-table"><thead id="af-year-head"></thead><tbody id="af-year-body"></tbody></table></div></div>
   </div>
 </div>
 
@@ -2522,24 +2530,105 @@ function markReadingProgressToday(){
 function updBook(id,pct){if(!STATE.books)return;const b=STATE.books.find(x=>x.id===id);if(b)b.pct=parseInt(pct);const e1=document.getElementById('bp-'+id);const e2=document.getElementById('bpf-'+id);if(e1)e1.textContent=pct+'%';if(e2)e2.style.width=pct+'%';markReadingProgressToday();scheduleSave();}
 
 // ===== AF =====
+let AF_YEAR = CUR_YEAR;
+let AF_MONTH = CUR_MONTH;
+
+function renderAFYearNav(){
+  renderYearNav('af-year-nav', AF_YEAR, 'setAFYear');
+}
+
+function setAFYear(y){
+  AF_YEAR = y;
+  renderAFYearNav();
+  renderAFMonthNav();
+  initAF();
+}
+
+function renderAFMonthNav(){
+  const nav=document.getElementById('af-month-nav');
+  if(!nav) return;
+  const mShort=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  nav.innerHTML=mShort.map((m,i)=>{
+    const isActive=i===AF_MONTH;
+    const isFuture=isFutureDatePart(AF_YEAR,i,1);
+    return `<button class="mev-btn ${isFuture?'future':''} ${isActive?'active':''}" onclick="setAFMonth(${i})">${m}</button>`;
+  }).join('');
+}
+
+function setAFMonth(m){
+  AF_MONTH = m;
+  renderAFMonthNav();
+  initAF();
+}
+
+function getAFMonthSummary(year, month){
+  const af=STATE.af||{};
+  const days=daysInMonth(year,month);
+  const isCurrentMonth=(year===CUR_YEAR && month===CUR_MONTH);
+  const isPastMonth=year<CUR_YEAR || (year===CUR_YEAR && month<CUR_MONTH);
+  const maxDay=isCurrentMonth?CUR_DAY:(isPastMonth?days:0);
+  let musc=0,aerob=0,ambos=0,total=0;
+  for(let d=1;d<=days;d++){
+    if(isFutureDatePart(year,month,d)) continue;
+    const tipo=af[dateKey(year,month,d)]||'';
+    if(tipo==='musc'){musc++;total++;}
+    else if(tipo==='aerob'){aerob++;total++;}
+    else if(tipo==='ambos'){musc++;aerob++;ambos++;total+=2;}
+  }
+  return {musc,aerob,ambos,total,maxDay,possible:maxDay*2,pct:maxDay?Math.round(total/(maxDay*2)*100):0};
+}
+
 function initAF(){
-  const dn=['D','S','T','Q','Q','S','S'];const fd=new Date(CUR_YEAR,CUR_MONTH,1).getDay();
-  document.getElementById('af-month-title').textContent=`${MONTH_NAMES[CUR_MONTH]} ${CUR_YEAR}`;
-  const af=STATE.af||{};let html='';let musc=0,aerob=0;
-  for(let d=1;d<=DAYS_IN_MONTH;d++){
-    const ds=`${CUR_YEAR}-${String(CUR_MONTH+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const tipo=af[ds]||'';const isFut=d>CUR_DAY;const dn2=dn[(fd+d-1)%7];
+  renderAFYearNav();
+  renderAFMonthNav();
+  const dn=['D','S','T','Q','Q','S','S'];
+  const year=AF_YEAR, month=AF_MONTH;
+  const days=daysInMonth(year,month);
+  const fd=new Date(year,month,1).getDay();
+  const title=document.getElementById('af-month-title');
+  if(title) title.textContent=`${MONTH_NAMES[month]} ${year}`;
+  const af=STATE.af||{};let html='';
+  for(let d=1;d<=days;d++){
+    const ds=dateKey(year,month,d);
+    const tipo=af[ds]||'';const isFut=isFutureDatePart(year,month,d);const dn2=dn[(fd+d-1)%7];
     let em='',cls='';
-    if(tipo==='musc'){em='💪';cls='musc';if(!isFut)musc++;}
-    else if(tipo==='aerob'){em='🏃';cls='aerob';if(!isFut)aerob++;}
-    else if(tipo==='ambos'){em='🔥';cls='ambos';if(!isFut){musc++;aerob++;}}
+    if(tipo==='musc'){em='💪';cls='musc';}
+    else if(tipo==='aerob'){em='🏃';cls='aerob';}
+    else if(tipo==='ambos'){em='🔥';cls='ambos';}
     html+=`<div class="af-day"><div class="af-day-label">${dn2}</div><div class="af-cell ${cls} ${isFut?'future':''}" onclick="cycleAF('${ds}',this)">${em}</div><div style="font-size:9px;color:var(--muted);text-align:center;margin-top:1px">${d}</div></div>`;
   }
   document.getElementById('af-grid').innerHTML=html;
-  document.getElementById('af-badge').textContent=`💪 ${musc} · 🏃 ${aerob}`;
-  document.getElementById('af-bar').style.width=Math.min(Math.round((musc+aerob)/(CUR_DAY*2)*100),100)+'%';
-  document.getElementById('af-label').textContent=`Musculação: ${musc} · Aeróbico: ${aerob} dias`;
+  const s=getAFMonthSummary(year,month);
+  document.getElementById('af-badge').textContent=`💪 ${s.musc} · 🏃 ${s.aerob}`;
+  document.getElementById('af-bar').style.width=(s.maxDay?Math.min(s.pct,100):0)+'%';
+  document.getElementById('af-label').textContent=s.maxDay?`Musculação: ${s.musc} · Aeróbico: ${s.aerob} · ${s.total} de ${s.possible} possíveis (${s.pct}%)`:'Mês futuro — aguardando registros';
+  renderAFAnnual();
 }
+
+function renderAFAnnual(){
+  const title=document.getElementById('af-year-title');
+  if(title) title.textContent=`Acompanhamento anual — ${AF_YEAR}`;
+  let yMusc=0,yAerob=0,yAmbos=0,yTotal=0,yPossible=0,activeMonths=0;
+  let body='';
+  for(let m=0;m<12;m++){
+    const s=getAFMonthSummary(AF_YEAR,m);
+    yMusc+=s.musc;yAerob+=s.aerob;yAmbos+=s.ambos;yTotal+=s.total;yPossible+=s.possible;
+    if(s.total) activeMonths++;
+    const fut=isFutureDatePart(AF_YEAR,m,1);
+    body+=`<tr><td class="habit-label">${MONTH_SHORT[m]}</td><td>${fut?'-':s.musc}</td><td>${fut?'-':s.aerob}</td><td>${fut?'-':s.ambos}</td><td class="habit-total">${fut?'-':s.pct+'%'}</td></tr>`;
+  }
+  const pct=yPossible?Math.round(yTotal/yPossible*100):0;
+  const grid=document.getElementById('af-year-grid');
+  if(grid) grid.innerHTML=`
+    <div class="year-stat"><div class="year-stat-num">${yMusc}</div><div class="year-stat-label">💪 Musculação</div></div>
+    <div class="year-stat"><div class="year-stat-num">${yAerob}</div><div class="year-stat-label">🏃 Aeróbico</div></div>
+    <div class="year-stat"><div class="year-stat-num">${pct}%</div><div class="year-stat-label">Meta anual</div><div class="year-stat-label" style="font-size:9px">${yTotal} de ${yPossible}</div></div>`;
+  const head=document.getElementById('af-year-head');
+  if(head) head.innerHTML='<tr><th class="hn">Mês</th><th>💪</th><th>🏃</th><th>🔥</th><th>%</th></tr>';
+  const bodyEl=document.getElementById('af-year-body');
+  if(bodyEl) bodyEl.innerHTML=body;
+}
+
 function cycleAF(ds,el){
   if(el.classList.contains('future'))return;
   if(!STATE.af)STATE.af={};

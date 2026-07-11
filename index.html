@@ -2094,7 +2094,7 @@ function setHabit(key,ds,val){if(!STATE.habits)STATE.habits={};if(!STATE.habits[
 function getMonthTotal(key,y,m){let t=0;for(let d=1;d<=daysInMonth(y,m);d++)t+=getHabit(key,`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`);return t;}
 function getHistTotal(key,mk){return HIST_HABITS[key]&&HIST_HABITS[key][mk]?HIST_HABITS[key][mk]:0;}
 
-const SAVERS_DEF=[{key:'silencio',label:'🧘 Silêncio'},{key:'afirmacao',label:'💬 Afirmação'},{key:'visualizacao',label:'🎯 Visualização'},{key:'exercicio',label:'💪 Exercício'},{key:'leitura',label:'📖 Leitura'},{key:'escrita',label:'✍️ Escrita'},{key:'idiomas',label:'🗣️ Idiomas'},{key:'hemodinamica',label:'🫀 Hemodinâmica'},{key:'cardiologia',label:'❤️ Cardiologia'},{key:'financas',label:'💰 Finanças'},{key:'dieta',label:'🥗 Dieta'}];
+const SAVERS_DEF=[{key:'silencio',label:'🧘 Silêncio'},{key:'afirmacao',label:'💬 Afirmação'},{key:'visualizacao',label:'🎯 Visualização'},{key:'exercicio',label:'💪 Exercício'},{key:'leitura',label:'📖 Leitura'},{key:'escrita',label:'✍️ Escrita'},{key:'idiomas',label:'🗣️ Idiomas'},{key:'hemodinamica',label:'🫀 Hemodinâmica'},{key:'cardiologia',label:'❤️ Cardiologia'},{key:'financas',label:'💰 Finanças'},{key:'dieta',label:'⭐ Metas'}];
 
 function initMM(){
   const dn=['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
@@ -2715,7 +2715,7 @@ function exportEvolution(){
   const months = ['jan','fev','mar','abr','mai','jun'];
   const monthNames = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho'];
   const habits = ['silencio','afirmacao','visualizacao','escrita','leitura','exercicio','idiomas','hemodinamica','cardiologia','financas','dieta'];
-  const habitLabels = ['Silêncio','Afirmação','Visualização','Escrita','Leitura','Exercício','Idiomas','Hemodinâmica','Cardiologia','Finanças','Dieta'];
+  const habitLabels = ['Silêncio','Afirmação','Visualização','Escrita','Leitura','Exercício','Idiomas','Hemodinâmica','Cardiologia','Finanças','Metas'];
 
   let csv = 'Hábito,' + monthNames.join(',') + ',Total\n';
 

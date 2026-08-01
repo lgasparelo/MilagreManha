@@ -122,6 +122,10 @@ body{background:var(--bg);font-family:var(--font);color:var(--text);font-size:14
 .mev-item-check.done{background:var(--blue);color:#fff}
 .mev-item-text{flex:1;line-height:1.3}
 .mev-item-text.done{text-decoration:line-through;color:var(--muted)}
+.chart-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}
+.chart-filter label{font-size:11px;color:var(--muted);font-weight:500}
+.chart-filter select{border:1px solid var(--border);border-radius:20px;background:#fff;color:var(--text);font-family:var(--font);font-size:11px;font-weight:600;padding:5px 28px 5px 10px;outline:none;cursor:pointer}
+.chart-filter select:focus{border-color:var(--green);box-shadow:0 0 0 2px rgba(45,106,79,.12)}
 .mm-score-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .mm-score{font-size:20px;font-weight:700;color:var(--green)}
 .mm-score span{font-size:11px;font-weight:400;color:var(--muted);margin-left:3px}
@@ -703,7 +707,7 @@ function checkSenha(){
     <div class="hmap-legend"><span>Menos</span><div class="hmap-legend-cells"><div class="hmap-cell"></div><div class="hmap-cell l1"></div><div class="hmap-cell l2"></div><div class="hmap-cell l3"></div><div class="hmap-cell l4"></div></div><span>Mais</span></div></div>
   </div>
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Totais anuais</span></div><div class="year-grid" id="year-grid"></div></div>
-  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">SAVERS mensais</span></div><div class="chart-wrap"><canvas id="chart-savers"></canvas></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">SAVERS mensais</span><div class="chart-filter"><label for="chart-range">Período</label><select id="chart-range" onchange="setChartRange(this.value)"><option value="year">Este ano</option><option value="last6">Últimos 6 meses</option><option value="last12">Últimos 12 meses</option><option value="around6">6 meses antes + 6 após</option></select></div></div><div class="chart-wrap"><canvas id="chart-savers"></canvas></div></div>
 
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Exercício físico</span></div><div class="chart-wrap"><canvas id="chart-exercicio"></canvas></div></div>
   <div class="card" style="margin-bottom:12px"><div class="card-header"><span class="card-name">Estudos + Idiomas</span></div><div class="chart-wrap"><canvas id="chart-estudos"></canvas></div></div>
@@ -1958,6 +1962,10 @@ const HIST_HABITS = {
   idiomas:{jan:13,fev:0,mar:2,abr:4,mai:19},hemodinamica:{jan:0,fev:1,mar:4,abr:2,mai:3},
   cardiologia:{jan:1,fev:0,mar:6,abr:4,mai:9},financas:{jan:3,fev:0,mar:0,abr:0,mai:1},dieta:{jan:8,fev:0,mar:0,abr:0,mai:0}
 };
+const HIST_AF = {
+  musc:{jan:16,fev:1,mar:15,abr:10,mai:16},
+  aerob:{jan:9,fev:0,mar:14,abr:6,mai:15}
+};
 
 function getDefaultHabits() {
   const h = {};
@@ -2653,6 +2661,7 @@ function deleteStudy(id){if(!STATE.studies)return;STATE.studies=STATE.studies.fi
 
 // ===== EVOLUÇÃO =====
 let chartInstances = {};
+let CHART_RANGE = 'year';
 function buildEvolution(){buildHeatmap();buildYearStats();buildCharts();}
 function destroyChart(id){
   if(chartInstances[id]){ try{ chartInstances[id].destroy(); }catch(e){} delete chartInstances[id]; }
@@ -2693,16 +2702,68 @@ function buildYearStats(){
     <div class="year-stat"><div class="year-stat-num">${y.hemo}</div><div class="year-stat-label">🫀 Hemodinâmica</div></div>
     <div class="year-stat"><div class="year-stat-num">${y.cardio}</div><div class="year-stat-label">❤️ Cardiologia</div></div>`;
 }
-function getMonthlyData(key){const mkeys=['jan','fev','mar','abr','mai'];const r=mkeys.map(k=>getHistTotal(key,k));r.push(getMonthTotal(key,CUR_YEAR,CUR_MONTH));return r;}
+function getChartMonths(){
+  const cur = new Date(CUR_YEAR, CUR_MONTH, 1);
+  let start, end;
+  if(CHART_RANGE==='last6'){
+    start = new Date(CUR_YEAR, CUR_MONTH-5, 1);
+    end = cur;
+  }else if(CHART_RANGE==='last12'){
+    start = new Date(CUR_YEAR, CUR_MONTH-11, 1);
+    end = cur;
+  }else if(CHART_RANGE==='around6'){
+    start = new Date(CUR_YEAR, CUR_MONTH-6, 1);
+    end = new Date(CUR_YEAR, CUR_MONTH+6, 1);
+  }else{
+    start = new Date(CUR_YEAR, 0, 1);
+    end = new Date(CUR_YEAR, 11, 1);
+  }
+  const out=[];
+  for(let d=new Date(start); d<=end; d.setMonth(d.getMonth()+1)) out.push({year:d.getFullYear(), month:d.getMonth()});
+  return out;
+}
+function chartMonthLabel({year,month}){
+  const lbl = MONTH_SHORT[month].charAt(0).toUpperCase()+MONTH_SHORT[month].slice(1);
+  return year===CUR_YEAR ? lbl : `${lbl}/${String(year).slice(2)}`;
+}
+function getMonthlyDataForRange(key, months){
+  return months.map(({year,month})=>getMonthTotalByDate(key, year, month));
+}
+function getMonthTotalByDate(key,y,m){
+  let t=0;
+  const days = daysInMonth(y,m);
+  for(let d=1; d<=days; d++){
+    const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    t += getHabitForDate(key, ds);
+  }
+  return t;
+}
+function getAfMonthTotal(type,y,m){
+  const histKeys=['jan','fev','mar','abr','mai'];
+  if(y===2026 && m<5) return (HIST_AF[type] && HIST_AF[type][histKeys[m]]) || 0;
+  let t=0;
+  for(let d=1; d<=daysInMonth(y,m); d++){
+    const ds = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    if(STATE.af && STATE.af[ds]===type) t++;
+  }
+  return t;
+}
+function setChartRange(range){
+  CHART_RANGE = range || 'year';
+  buildCharts();
+}
 function buildCharts(){
-  const months=['Jan','Fev','Mar','Abr','Mai','Jun'];
+  const chartMonths=getChartMonths();
+  const months=chartMonths.map(chartMonthLabel);
+  const chartRangeSelect=document.getElementById('chart-range');
+  if(chartRangeSelect) chartRangeSelect.value = CHART_RANGE;
   const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{font:{size:10},boxWidth:12}}},scales:{y:{max:31,ticks:{font:{size:9}}},x:{ticks:{font:{size:10}}}}};
   destroyChart('savers');
-  chartInstances.savers = new Chart(document.getElementById('chart-savers').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Silêncio',data:getMonthlyData('silencio'),backgroundColor:'#2D6A4F'},{label:'Afirmação',data:getMonthlyData('afirmacao'),backgroundColor:'#52B788'},{label:'Exercício',data:getMonthlyData('exercicio'),backgroundColor:'#1D4ED8'},{label:'Leitura',data:getMonthlyData('leitura'),backgroundColor:'#6D28D9'}]},options:opts});
+  chartInstances.savers = new Chart(document.getElementById('chart-savers').getContext('2d'),{type:'bar',data:{labels:months,datasets:[{label:'Silêncio',data:getMonthlyDataForRange('silencio',chartMonths),backgroundColor:'#2D6A4F'},{label:'Afirmação',data:getMonthlyDataForRange('afirmacao',chartMonths),backgroundColor:'#52B788'},{label:'Exercício',data:getMonthlyDataForRange('exercicio',chartMonths),backgroundColor:'#1D4ED8'},{label:'Leitura',data:getMonthlyDataForRange('leitura',chartMonths),backgroundColor:'#6D28D9'}]},options:opts});
   destroyChart('exercicio');
-  chartInstances.exercicio = new Chart(document.getElementById('chart-exercicio').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Musculação',data:[16,1,15,10,16,getMonthTotal('exercicio',CUR_YEAR,CUR_MONTH)],borderColor:'#1D4ED8',backgroundColor:'rgba(29,78,216,.1)',tension:.3,fill:true},{label:'Aeróbico',data:[9,0,14,6,15,4],borderColor:'#52B788',backgroundColor:'rgba(82,183,136,.1)',tension:.3,fill:true}]},options:opts});
+  chartInstances.exercicio = new Chart(document.getElementById('chart-exercicio').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Musculação',data:chartMonths.map(({year,month})=>getAfMonthTotal('musc',year,month)),borderColor:'#1D4ED8',backgroundColor:'rgba(29,78,216,.1)',tension:.3,fill:true},{label:'Aeróbico',data:chartMonths.map(({year,month})=>getAfMonthTotal('aerob',year,month)),borderColor:'#52B788',backgroundColor:'rgba(82,183,136,.1)',tension:.3,fill:true}]},options:opts});
   destroyChart('estudos');
-  chartInstances.estudos = new Chart(document.getElementById('chart-estudos').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Hemodinâmica',data:getMonthlyData('hemodinamica'),borderColor:'#6D28D9',backgroundColor:'rgba(109,40,217,.1)',tension:.3,fill:true},{label:'Cardiologia',data:getMonthlyData('cardiologia'),borderColor:'#B91C1C',backgroundColor:'rgba(185,28,28,.1)',tension:.3,fill:true},{label:'Idiomas',data:getMonthlyData('idiomas'),borderColor:'#B45309',backgroundColor:'rgba(180,83,9,.1)',tension:.3,fill:true}]},options:opts});
+  chartInstances.estudos = new Chart(document.getElementById('chart-estudos').getContext('2d'),{type:'line',data:{labels:months,datasets:[{label:'Hemodinâmica',data:getMonthlyDataForRange('hemodinamica',chartMonths),borderColor:'#6D28D9',backgroundColor:'rgba(109,40,217,.1)',tension:.3,fill:true},{label:'Cardiologia',data:getMonthlyDataForRange('cardiologia',chartMonths),borderColor:'#B91C1C',backgroundColor:'rgba(185,28,28,.1)',tension:.3,fill:true},{label:'Idiomas',data:getMonthlyDataForRange('idiomas',chartMonths),borderColor:'#B45309',backgroundColor:'rgba(180,83,9,.1)',tension:.3,fill:true}]},options:opts});
 
   // Gráfico de metas cumpridas (% por grupo + total)
   const metasOpts = {

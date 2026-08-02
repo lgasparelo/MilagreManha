@@ -626,7 +626,7 @@ function checkSenha(){
 
 <!-- ATIVIDADE -->
 <div class="page" id="page-af">
-  <div class="header"><div><h1>Atividade Física</h1><p>Meta: musculação 3x + aeróbico 3x / semana</p></div><span class="badge" id="af-badge"></span></div>
+  <div class="header"><div><h1>Atividade Física</h1><p>Meta: 20 dias com exercício por mês · 🔥 = treino de manhã e à tarde</p></div><span class="badge" id="af-badge"></span></div>
   <div class="card"><div class="card-header"><div class="card-icon" style="background:var(--green-light)">💪</div><span class="card-name" id="af-month-title">Mês atual</span><span style="font-size:10px;color:var(--muted);margin-left:auto">toque: musc → aeróbico → ambos</span></div>
     <div style="padding:12px 14px 0">
       <div class="year-nav" id="af-year-nav"></div>
@@ -2554,15 +2554,21 @@ function getAFMonthSummary(year, month){
   const isCurrentMonth=(year===CUR_YEAR && month===CUR_MONTH);
   const isPastMonth=year<CUR_YEAR || (year===CUR_YEAR && month<CUR_MONTH);
   const maxDay=isCurrentMonth?CUR_DAY:(isPastMonth?days:0);
-  let musc=0,aerob=0,ambos=0,total=0;
+  const monthlyGoal=20;
+  let musc=0,aerob=0,ambos=0,activeDays=0,totalSessions=0;
   for(let d=1;d<=days;d++){
     if(isFutureDatePart(year,month,d)) continue;
     const tipo=af[dateKey(year,month,d)]||'';
-    if(tipo==='musc'){musc++;total++;}
-    else if(tipo==='aerob'){aerob++;total++;}
-    else if(tipo==='ambos'){musc++;aerob++;ambos++;total+=2;}
+    if(tipo==='musc'){musc++;activeDays++;totalSessions++;}
+    else if(tipo==='aerob'){aerob++;activeDays++;totalSessions++;}
+    else if(tipo==='ambos'){musc++;aerob++;ambos++;activeDays++;totalSessions+=2;}
   }
-  return {musc,aerob,ambos,total,maxDay,possible:maxDay*2,pct:maxDay?Math.round(total/(maxDay*2)*100):0};
+  return {
+    musc,aerob,ambos,activeDays,totalSessions,maxDay,monthlyGoal,
+    possible:maxDay,
+    pct:maxDay?Math.round(activeDays/maxDay*100):0,
+    goalPct:Math.round(activeDays/monthlyGoal*100)
+  };
 }
 
 function initAF(){
@@ -2586,32 +2592,32 @@ function initAF(){
   }
   document.getElementById('af-grid').innerHTML=html;
   const s=getAFMonthSummary(year,month);
-  document.getElementById('af-badge').textContent=`💪 ${s.musc} · 🏃 ${s.aerob}`;
-  document.getElementById('af-bar').style.width=(s.maxDay?Math.min(s.pct,100):0)+'%';
-  document.getElementById('af-label').textContent=s.maxDay?`Musculação: ${s.musc} · Aeróbico: ${s.aerob} · ${s.total} de ${s.possible} possíveis (${s.pct}%)`:'Mês futuro — aguardando registros';
+  document.getElementById('af-badge').textContent=`📅 ${s.activeDays}/${s.monthlyGoal} · 🔥 ${s.ambos}`;
+  document.getElementById('af-bar').style.width=(s.maxDay?Math.min(s.goalPct,100):0)+'%';
+  document.getElementById('af-label').textContent=s.maxDay?`Dias com exercício: ${s.activeDays}/${s.monthlyGoal} (${s.goalPct}% da meta) · Consistência: ${s.activeDays} de ${s.maxDay} dias (${s.pct}%) · 🔥 conta como 1 dia, com 2 treinos`:'Mês futuro — aguardando registros';
   renderAFAnnual();
 }
 
 function renderAFAnnual(){
   const title=document.getElementById('af-year-title');
   if(title) title.textContent=`Acompanhamento anual — ${AF_YEAR}`;
-  let yMusc=0,yAerob=0,yAmbos=0,yTotal=0,yPossible=0,activeMonths=0;
+  let yMusc=0,yAerob=0,yAmbos=0,yActiveDays=0,yPossibleDays=0;
   let body='';
   for(let m=0;m<12;m++){
     const s=getAFMonthSummary(AF_YEAR,m);
-    yMusc+=s.musc;yAerob+=s.aerob;yAmbos+=s.ambos;yTotal+=s.total;yPossible+=s.possible;
-    if(s.total) activeMonths++;
+    yMusc+=s.musc;yAerob+=s.aerob;yAmbos+=s.ambos;yActiveDays+=s.activeDays;yPossibleDays+=s.possible;
     const fut=isFutureDatePart(AF_YEAR,m,1);
-    body+=`<tr><td class="habit-label">${MONTH_SHORT[m]}</td><td>${fut?'-':s.musc}</td><td>${fut?'-':s.aerob}</td><td>${fut?'-':s.ambos}</td><td class="habit-total">${fut?'-':s.pct+'%'}</td></tr>`;
+    body+=`<tr><td class="habit-label">${MONTH_SHORT[m]}</td><td>${fut?'-':s.activeDays}</td><td>${fut?'-':s.musc}</td><td>${fut?'-':s.aerob}</td><td>${fut?'-':s.ambos}</td><td class="habit-total">${fut?'-':s.pct+'%'}</td><td>${fut?'-':s.activeDays+'/'+s.monthlyGoal+(s.activeDays>=s.monthlyGoal?' ✓':'')}</td></tr>`;
   }
-  const pct=yPossible?Math.round(yTotal/yPossible*100):0;
+  const pct=yPossibleDays?Math.round(yActiveDays/yPossibleDays*100):0;
   const grid=document.getElementById('af-year-grid');
   if(grid) grid.innerHTML=`
+    <div class="year-stat"><div class="year-stat-num">${yActiveDays}</div><div class="year-stat-label">📅 Dias com exercício</div></div>
     <div class="year-stat"><div class="year-stat-num">${yMusc}</div><div class="year-stat-label">💪 Musculação</div></div>
     <div class="year-stat"><div class="year-stat-num">${yAerob}</div><div class="year-stat-label">🏃 Aeróbico</div></div>
-    <div class="year-stat"><div class="year-stat-num">${pct}%</div><div class="year-stat-label">Meta anual</div><div class="year-stat-label" style="font-size:9px">${yTotal} de ${yPossible}</div></div>`;
+    <div class="year-stat"><div class="year-stat-num">${pct}%</div><div class="year-stat-label">Consistência anual</div><div class="year-stat-label" style="font-size:9px">${yActiveDays} de ${yPossibleDays} dias · 🔥 ${yAmbos}</div></div>`;
   const head=document.getElementById('af-year-head');
-  if(head) head.innerHTML='<tr><th class="hn">Mês</th><th>💪</th><th>🏃</th><th>🔥</th><th>%</th></tr>';
+  if(head) head.innerHTML='<tr><th class="hn">Mês</th><th>Dias</th><th>💪</th><th>🏃</th><th>🔥</th><th>% dias</th><th>Meta</th></tr>';
   const bodyEl=document.getElementById('af-year-body');
   if(bodyEl) bodyEl.innerHTML=body;
 }

@@ -1836,6 +1836,9 @@ function deleteViagem(id) {
 // ===== STORAGE + STATE =====
 let STATE = {};
 let syncTimer = null;
+let remoteSyncAttemptFinished = false;
+let remoteStateLoaded = false;
+let saveRequestedBeforeRemoteSync = false;
 
 function setSyncStatus(s, l) {
   const dot = document.getElementById('sync-dot');
@@ -1844,8 +1847,10 @@ function setSyncStatus(s, l) {
   if(lbl) lbl.textContent = l;
 }
 
-// Carrega IMEDIATAMENTE do localStorage — sem esperar Firebase
-function loadFromCloud() {
+// Carrega o local apenas como fallback visual e aguarda a tentativa de leitura
+// do Firebase antes de permitir qualquer gravação. Isso evita que uma cópia
+// local antiga/default sobrescreva o estado remoto durante a inicialização.
+async function loadFromCloud() {
   try {
     const local = localStorage.getItem('mm-luiz-2026');
     STATE = local ? JSON.parse(local) : getDefaultState();
@@ -1853,12 +1858,10 @@ function loadFromCloud() {
     STATE = getDefaultState();
   }
   setSyncStatus('ok', 'Carregado ✓');
-  // Tenta sincronizar com Firebase em background (sem bloquear)
-  syncFromFirebase();
-  return Promise.resolve();
+  await syncFromFirebase();
 }
 
-// Sincronização Firebase em background
+// A inicialização aguarda esta tentativa antes de executar rotinas que salvam.
 async function syncFromFirebase() {
   try {
     if(!window.fbLoad) return;
@@ -1870,6 +1873,7 @@ async function syncFromFirebase() {
         try{const imgs=await window.fbLoadImgs();if(imgs)remote.viz_images=imgs;}catch(e){}
       }
       STATE = remote;
+      remoteStateLoaded = true;
       localStorage.setItem('mm-luiz-2026', JSON.stringify(remote));
       setSyncStatus('ok', 'Firebase ✓');
       // Re-renderiza com dados do Firebase
@@ -1885,6 +1889,8 @@ async function syncFromFirebase() {
   } catch(e) {
     console.log('Firebase background sync:', e.message);
     setSyncStatus('ok', 'Local ✓');
+  } finally {
+    remoteSyncAttemptFinished = true;
   }
 }
 
@@ -1895,7 +1901,9 @@ async function saveToCloud() {
   setSyncStatus('ok', 'Salvo ✓');
   // Tenta Firebase em background
   try {
-    if(window.fbSave) {
+    // Nunca publique um fallback local/default se a leitura remota não confirmou
+    // o estado atual nesta sessão. Em falha de leitura, mantenha a alteração só local.
+    if(window.fbSave && remoteStateLoaded) {
       window.fbSave(data).then(ok => {
         if(ok) setSyncStatus('ok', 'Firebase ✓');
       }).catch(e => console.log('Firebase save bg:', e.message));
@@ -1903,7 +1911,14 @@ async function saveToCloud() {
   } catch(e) {}
 }
 
-function scheduleSave() { clearTimeout(syncTimer); syncTimer = setTimeout(saveToCloud, 1000); }
+function scheduleSave() {
+  if(!remoteSyncAttemptFinished) {
+    saveRequestedBeforeRemoteSync = true;
+    return;
+  }
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(saveToCloud, 1000);
+}
 
 
 
@@ -3343,16 +3358,21 @@ function copyPendingYesterdayGoals(){
   if(!copied && goals.length) alert('As pendências de ontem já estão na lista de hoje ou o limite de 5 metas foi atingido.');
 }
 
-function init(){
-  loadFromCloud(); // síncrono — carrega local e dispara Firebase em bg
+async function init(){
+  await loadFromCloud();
   renderAfirmacoes();
   renderViz('viz-mm');renderViz('viz-diary');
   initMM();initDiary();initIdiomas();initLeitura();initReading();initAF();initEstudos();
   renderGoals();
   renderMgoalNav();
   renderMonthGoals();
-  checkMonthRollover();
+  // Rollover pode gravar; só execute depois que o estado remoto foi confirmado.
+  if(remoteStateLoaded) checkMonthRollover();
   loadHermesData();
+  if(saveRequestedBeforeRemoteSync){
+    saveRequestedBeforeRemoteSync = false;
+    scheduleSave();
+  }
 }
 init();
 </script>

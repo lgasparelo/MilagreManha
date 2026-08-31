@@ -1,0 +1,30 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Estado principal do app MilagreManha
+    match /dashboard/luiz {
+      allow read: if true;
+      allow write: if
+        request.resource.data.keys().hasOnly(['state', 'updated', 'clientVersion']) &&
+        request.resource.data.state is string &&
+        request.resource.data.updated is string &&
+        request.resource.data.clientVersion == '2026-08-31-v2';
+    }
+
+    // Imagens do app, separadas para não estourar limite de 1MB no estado principal
+    match /dashboard/luiz_imgs {
+      allow read: if true;
+      allow write: if
+        request.resource.data.keys().hasOnly(['imgs', 'updated', 'clientVersion']) &&
+        request.resource.data.imgs is list &&
+        request.resource.data.updated is string &&
+        request.resource.data.clientVersion == '2026-08-31-v2';
+    }
+
+    // Bloqueia qualquer outro documento/coleção
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
